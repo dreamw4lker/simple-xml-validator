@@ -36,12 +36,15 @@ public class Main {
         String content = IOUtils.toString(new FileInputStream(args[0]), StandardCharsets.UTF_8);
         content = content.replaceFirst("<ClinicalDocument xmlns=\"urn:hl7-org:v3\"", "<ClinicalDocument xmlns=\"\"");
 
-        log.info("Validating... Please, wait...");
+        log.info("Validating document «{}» with Schematron «{}». Please, wait...", args[0], args[1]);
         SchematronOutputType result = validateXMLViaPureSchematron(new File(args[1]), content);
         List<SVRLFailedAssert> assertList = SVRLHelper.getAllFailedAssertions(result);
         for (int i = 0; i < assertList.size(); i++) {
             SVRLFailedAssert failedAssert = assertList.get(i);
-            log.error("Failed assert #{}: Element: {}, rule: {}", (i + 1), failedAssert.getLocation(), failedAssert.getText());
+            log.error("-----===== Failed rule #{} =====-----", i + 1);
+            log.error("Element: {}", failedAssert.getLocation());
+            log.error("Rule: {}", failedAssert.getText());
         }
+        log.info("Validation finished: Document «{}» is {} for Schematron «{}»", args[0], assertList.size() > 0 ? "NOT VALID" : "VALID", args[1]);
     }
 }
