@@ -1,4 +1,4 @@
-package ru.bregis.ssval;
+package ru.bregis.ssval.validator.xsd;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
@@ -6,11 +6,16 @@ import org.xml.sax.SAXParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XmlErrorHandler implements ErrorHandler {
+/**
+ * Обработчик ошибок по XSD-схеме.
+ * Все ошибки уровня warning, error, fatalError направляются в массив exceptions.
+ * После появления первой ошибки дальнейшая валидация НЕ останавливается.
+ */
+public class XSDXmlErrorHandler implements ErrorHandler {
 
     private final List<SAXParseException> exceptions;
 
-    public XmlErrorHandler() {
+    public XSDXmlErrorHandler() {
         this.exceptions = new ArrayList<>();
     }
 
