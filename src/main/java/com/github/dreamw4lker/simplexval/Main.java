@@ -1,15 +1,11 @@
-package ru.bregis.ssval;
+package com.github.dreamw4lker.simplexval;
 
+import com.github.dreamw4lker.simplexval.beans.PropertiesBean;
+import com.github.dreamw4lker.simplexval.enums.ValidatorMode;
+import com.github.dreamw4lker.simplexval.helpers.PropertiesHelper;
+import com.github.dreamw4lker.simplexval.validator.schematron.SchematronValidator;
+import com.github.dreamw4lker.simplexval.validator.xsd.XSDValidator;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.core.util.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ru.bregis.ssval.beans.PropertiesBean;
-import ru.bregis.ssval.enums.ValidationResult;
-import ru.bregis.ssval.enums.ValidatorMode;
-import ru.bregis.ssval.helpers.PropertiesHelper;
-import ru.bregis.ssval.validator.schematron.SchematronValidator;
-import ru.bregis.ssval.validator.xsd.XSDValidator;
 
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;

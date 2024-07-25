@@ -1,10 +1,10 @@
-package ru.bregis.ssval.validator.xsd;
+package com.github.dreamw4lker.simplexval.validator.xsd;
 
+import com.github.dreamw4lker.simplexval.enums.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import ru.bregis.ssval.enums.ValidationResult;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;

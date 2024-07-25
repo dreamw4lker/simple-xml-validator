@@ -1,4 +1,4 @@
-package ru.bregis.ssval.validator.xsd;
+package com.github.dreamw4lker.simplexval.validator.xsd;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;

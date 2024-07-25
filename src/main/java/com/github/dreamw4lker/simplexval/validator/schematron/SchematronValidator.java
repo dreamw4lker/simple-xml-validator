@@ -1,5 +1,6 @@
-package ru.bregis.ssval.validator.schematron;
+package com.github.dreamw4lker.simplexval.validator.schematron;
 
+import com.github.dreamw4lker.simplexval.enums.ValidationResult;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLFailedAssert;
@@ -8,7 +9,6 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.transform.StringStreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.bregis.ssval.enums.ValidationResult;
 
 import java.io.File;
 import java.util.List;

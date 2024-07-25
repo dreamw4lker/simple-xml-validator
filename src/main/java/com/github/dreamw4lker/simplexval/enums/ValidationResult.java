@@ -1,4 +1,4 @@
-package ru.bregis.ssval.enums;
+package com.github.dreamw4lker.simplexval.enums;
 
 /**
  * Перечисление результатов валидации

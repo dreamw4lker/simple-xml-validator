@@ -1,6 +1,6 @@
-package ru.bregis.ssval.beans;
+package com.github.dreamw4lker.simplexval.beans;
 
-import ru.bregis.ssval.enums.ValidatorMode;
+import com.github.dreamw4lker.simplexval.enums.ValidatorMode;
 
 /**
  * Бин с параметрами приложения

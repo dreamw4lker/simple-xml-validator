@@ -1,9 +1,9 @@
-package ru.bregis.ssval.helpers;
+package com.github.dreamw4lker.simplexval.helpers;
 
+import com.github.dreamw4lker.simplexval.beans.PropertiesBean;
+import com.github.dreamw4lker.simplexval.enums.ValidatorMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.bregis.ssval.beans.PropertiesBean;
-import ru.bregis.ssval.enums.ValidatorMode;
 
 import java.io.FileReader;
 import java.util.Properties;
