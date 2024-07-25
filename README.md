@@ -53,7 +53,7 @@
 mvn clean install
 ```
 
-В результате в папке `target` появится файл `ssval-X.X.X.jar` и папка `lib` с необходимыми библиотеками
+В результате в папке `target` появится файл `simple-xml-validator-X.X.X.jar` и папка `lib` с необходимыми библиотеками
 
 ## Запуск утилиты
 
@@ -68,7 +68,7 @@ _ALL_ - валидация по XSD и Schematron)
 Запуск утилиты выполняется командой:
 
 ```
-java -jar -Dapplication.properties=/path/to/application.properties ssval-X.X.X.jar
+java -jar -Dapplication.properties=/path/to/application.properties simple-xml-validator-X.X.X.jar
 ```
 
 **Важно!** не используйте кириллицу в путях до application.properties, XML, XSD и Schematron-файлов.
