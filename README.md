@@ -53,7 +53,7 @@
 mvn clean install
 ```
 
-В результате в папке `target` появится файл `simple-xml-validator-X.X.X.jar` и папка `lib` с необходимыми библиотеками
+В результате в папке `target` появится файл `simple-xml-validator-X.X.X.jar`
 
 ## Запуск утилиты
 
@@ -64,6 +64,8 @@ _ALL_ - валидация по XSD и Schematron)
 * **validator.input.xsd** – полный путь до главного XSD-файла (как правило, он имеет имя **CDA.xsd**)
 (только для режимов XSD и ALL)
 * **validator.input.schematron** – полный путь до Schematron-файла (только для режимов SCHEMATRON и ALL)
+* **validator.input.xml.clear-xml-namespace-on-schematron-validation** – флаг, указывающий, следует ли очищать xmlns
+у валидируемого через Schematron XML-файла
 
 Запуск утилиты выполняется командой:
 
