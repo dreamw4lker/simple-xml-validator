@@ -10,12 +10,15 @@ public class PropertiesBean {
     private final String xmlFilename;
     private final String xsdFilename;
     private final String schematronFilename;
+    private final boolean clearXmlNamespaceOnSchematronValidation;
 
-    public PropertiesBean(ValidatorMode validatorMode, String xmlFilename, String xsdFilename, String schematronFilename) {
+    public PropertiesBean(ValidatorMode validatorMode, String xmlFilename, String xsdFilename,
+                          String schematronFilename, boolean clearXmlNamespaceOnSchematronValidation) {
         this.validatorMode = validatorMode;
         this.xmlFilename = xmlFilename;
         this.xsdFilename = xsdFilename;
         this.schematronFilename = schematronFilename;
+        this.clearXmlNamespaceOnSchematronValidation = clearXmlNamespaceOnSchematronValidation;
     }
 
     public ValidatorMode getValidatorMode() {
@@ -32,5 +35,9 @@ public class PropertiesBean {
 
     public String getSchematronFilename() {
         return schematronFilename;
+    }
+
+    public boolean isClearXmlNamespaceOnSchematronValidation() {
+        return clearXmlNamespaceOnSchematronValidation;
     }
 }

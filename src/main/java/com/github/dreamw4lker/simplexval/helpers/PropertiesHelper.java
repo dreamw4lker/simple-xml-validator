@@ -43,6 +43,16 @@ public class PropertiesHelper {
             throw new IllegalArgumentException();
         }
 
+        //Получение флага, следует ли очищать namespace при валидации через Schematron
+        String isClearNamespaceString = properties.getProperty("validator.input.xml.clear-xml-namespace-on-schematron-validation");
+        boolean isClearNamespace;
+        if (isClearNamespaceString == null || !Set.of("true", "false").contains(isClearNamespaceString.toLowerCase())) {
+            log.error("Incorrect «validator.input.xml.clear-xml-namespace-on-schematron-validation» value: must be true or false");
+            throw new IllegalArgumentException();
+        } else {
+            isClearNamespace = Boolean.parseBoolean(isClearNamespaceString);
+        }
+
         //Получение XSD-файла со схемой (только в режимах XSD и ALL)
         String xsdFilename = null;
         if (Set.of(ValidatorMode.XSD, ValidatorMode.ALL).contains(validatorMode)) {
@@ -63,6 +73,6 @@ public class PropertiesHelper {
             }
         }
 
-        return new PropertiesBean(validatorMode, xmlFilename, xsdFilename, schematronFilename);
+        return new PropertiesBean(validatorMode, xmlFilename, xsdFilename, schematronFilename, isClearNamespace);
     }
 }

@@ -26,9 +26,11 @@ public class Main {
 
         //Валидация по Schematron
         if (Set.of(ValidatorMode.SCHEMATRON, ValidatorMode.ALL).contains(properties.getValidatorMode())) {
-            //В Schematron минздрава не указан namespace по умолчанию.
-            //Вырезаем его из прочитанного документа
-            content = content.replaceFirst("<ClinicalDocument xmlns=\"urn:hl7-org:v3\"", "<ClinicalDocument xmlns=\"\"");
+            //В некоторых Schematron-файлах не указан namespace по умолчанию.
+            //Если установлен флаг, вырезаем его и из прочитанного документа
+            if (properties.isClearXmlNamespaceOnSchematronValidation()) {
+                content = content.replaceFirst("xmlns=\".*?\"", "xmlns=\"\"");
+            }
             new SchematronValidator().validate(content, properties.getXmlFilename(), properties.getSchematronFilename());
         }
     }
