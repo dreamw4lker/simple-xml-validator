@@ -3,21 +3,28 @@ name: Build Java Maven project
 on:
   push:
     tags:
-    - '*'
+      - '*'
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Setup JDK 11 (Liberica)
-      uses: actions/setup-java@v4
-      with:
-        java-version: '11'
-        distribution: 'liberica'
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-    - name: Make GitHub Release
-      uses: ncipollo/release-action@v1
-      with:
-        artifacts: "target/simple-xml-validator-*.jar"
+      - name: Setup NOW variable
+        run: echo "NOW=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_ENV
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup JDK 11 (Liberica)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'liberica'
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+      - name: Install zip
+        uses: montudor/action-zip@v1
+      - name: Make zip archive of jar file and application.properties
+        run: zip -r "simple-xml-validator-${{  github.ref_name }}-${{ env.NOW }}.zip" simple-xml-validator-*.jar application.properties
+        working-directory: target
+      - name: Make GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "target/simple-xml-validator-*.zip"
