@@ -5,7 +5,8 @@ package com.github.dreamw4lker.simplexval.enums;
  */
 public enum ValidationResult {
     VALID("VALID"),
-    NOT_VALID("NOT VALID");
+    NOT_VALID("NOT VALID"),
+    SKIPPED("SKIPPED");
 
     final String text;
 

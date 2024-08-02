@@ -1,6 +1,8 @@
 package com.github.dreamw4lker.simplexval.validator.schematron;
 
+import com.github.dreamw4lker.simplexval.beans.PropertiesBean;
 import com.github.dreamw4lker.simplexval.enums.ValidationResult;
+import com.github.dreamw4lker.simplexval.enums.ValidatorMode;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLFailedAssert;
@@ -27,20 +29,25 @@ public class SchematronValidator {
         return aResSCH.applySchematronValidationToSVRL(new StringStreamSource(fixedXmlFile));
     }
 
-    public ValidationResult validate(String xmlContent, String xmlFilename, String schematronFilename) throws Exception {
-        log.info("Validating document «{}» with Schematron «{}». Please, wait...", xmlFilename, schematronFilename);
+    public ValidationResult validate(String xmlContent, PropertiesBean properties) throws Exception {
+        if (ValidatorMode.XSD.equals(properties.getValidatorMode())) {
+            return ValidationResult.SKIPPED;
+        }
 
-        SchematronOutputType result = validateXMLViaPureSchematron(new File(schematronFilename), xmlContent);
+        log.info("Schematron validation started");
+        log.info("Schematron file: «{}»", properties.getSchematronFilename());
+
+        SchematronOutputType result = validateXMLViaPureSchematron(new File(properties.getSchematronFilename()), xmlContent);
         List<SVRLFailedAssert> assertList = SVRLHelper.getAllFailedAssertions(result);
         for (int i = 0; i < assertList.size(); i++) {
             SVRLFailedAssert failedAssert = assertList.get(i);
-            log.error("-----===== Failed rule #{} =====-----", i + 1);
-            log.error("Element: {}", failedAssert.getLocation());
-            log.error("Rule: {}", failedAssert.getText());
+            log.error("→ Failed Schematron rule #{}", i + 1);
+            log.error("  Element: {}", failedAssert.getLocation());
+            log.error("  Rule: {}", failedAssert.getText());
         }
 
         ValidationResult validationResult = assertList.size() > 0 ? ValidationResult.NOT_VALID : ValidationResult.VALID;
-        log.info("Schematron validation finished: Document «{}» is {} for Schematron «{}»", xmlFilename, validationResult, schematronFilename);
+        log.info("Schematron validation completed");
         return validationResult;
     }
 }
