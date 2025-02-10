@@ -22,7 +22,7 @@ jobs:
       - name: Install zip
         uses: montudor/action-zip@v1
       - name: Make zip archive of jar file and application.properties
-        run: zip -r "simple-xml-validator-${{  github.ref_name }}-${{ env.NOW }}.zip" simple-xml-validator-*.jar application.properties
+        run: zip -r "simple-xml-validator-${{  github.ref_name }}-${{ env.NOW }}.zip" simple-xml-validator-*.jar application.properties validator-gui.sh
         working-directory: target
       - name: Make GitHub Release
         uses: ncipollo/release-action@v1
