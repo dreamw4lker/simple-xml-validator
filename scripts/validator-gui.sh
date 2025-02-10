@@ -10,14 +10,14 @@ Please refer to https://github.com/dreamw4lker/simple-xml-validator/blob/main/LI
 
 # Accept license
 if ! (whiptail --title "Simple XML validator" --yes-button="Принять" --no-button "Отмена" --yesno "$LICENSE" 15 80) then
-    exit 1
+  exit 1
 fi
 
 # Input file name
 FILENAME=$(whiptail --title  "Путь до XML-файла" --inputbox "Путь до проверяемого XML-файла" 10 60 document.xml 3>&1 1>&2 2>&3)
 EXIT_STATUS=$?
 if [ $EXIT_STATUS != 0 ]; then
-    exit 1
+  exit 1
 fi
 
 # Validation protocol
@@ -33,37 +33,41 @@ PROTOCOL_TYPE=$(whiptail --title  "Протокол валидации" --radiol
 "OTHER" "Другой" OFF 3>&1 1>&2 2>&3)
 EXIT_STATUS=$?
 if [ $EXIT_STATUS != 0 ]; then
-    exit 1
+  exit 1
 fi
 
 # Validation type
-VALIDATION_TYPE=$(whiptail --title  "Тип валидации" --radiolist \
-"Выберите тип валидации" 15 60 4 \
-"XSD" "XSD" OFF \
-"SCHEMATRON" "Schematron" OFF \
-"ALL" "XSD и Schematron" ON 3>&1 1>&2 2>&3)
-EXIT_STATUS=$?
-if [ $EXIT_STATUS != 0 ]; then
+if [ "$PROTOCOL_TYPE" == "LAB_V4" ] || [ "$PROTOCOL_TYPE" == "CITOL_V1" ]; then
+  VALIDATION_TYPE="XSD"
+else
+  VALIDATION_TYPE=$(whiptail --title  "Тип валидации" --radiolist \
+  "Выберите тип валидации" 15 60 4 \
+  "XSD" "XSD" OFF \
+  "SCHEMATRON" "Schematron" OFF \
+  "ALL" "XSD и Schematron" ON 3>&1 1>&2 2>&3)
+  EXIT_STATUS=$?
+  if [ $EXIT_STATUS != 0 ]; then
     exit 1
+  fi
 fi
 
 # Extra parameters for OTHER protocol type
 if [ "$PROTOCOL_TYPE" = "OTHER" ]; then
-    if [ "$VALIDATION_TYPE" == "XSD" ] || [ "$VALIDATION_TYPE" == "ALL" ]; then
-        XSD_FILENAME=$(whiptail --title  "Путь до XSD-файла" --inputbox "Путь до главного файла XSD-схемы" 10 60 CDA.xsd 3>&1 1>&2 2>&3)
-        EXIT_STATUS=$?
-        if [ $EXIT_STATUS != 0 ]; then
-            exit 1
-        fi
+  if [ "$VALIDATION_TYPE" == "XSD" ] || [ "$VALIDATION_TYPE" == "ALL" ]; then
+    XSD_FILENAME=$(whiptail --title  "Путь до XSD-файла" --inputbox "Путь до главного файла XSD-схемы" 10 60 CDA.xsd 3>&1 1>&2 2>&3)
+    EXIT_STATUS=$?
+    if [ $EXIT_STATUS != 0 ]; then
+      exit 1
     fi
+  fi
 
-    if [ "$VALIDATION_TYPE" == "SCHEMATRON" ] || [ "$VALIDATION_TYPE" == "ALL" ]; then
-        SCHEMATRON_FILENAME=$(whiptail --title  "Путь до Schematron-файла" --inputbox "Путь до Schematron-файла" 10 60 schematron.sch 3>&1 1>&2 2>&3)
-        EXIT_STATUS=$?
-        if [ $EXIT_STATUS != 0 ]; then
-            exit 1
-        fi
+  if [ "$VALIDATION_TYPE" == "SCHEMATRON" ] || [ "$VALIDATION_TYPE" == "ALL" ]; then
+    SCHEMATRON_FILENAME=$(whiptail --title  "Путь до Schematron-файла" --inputbox "Путь до Schematron-файла" 10 60 schematron.sch 3>&1 1>&2 2>&3)
+    EXIT_STATUS=$?
+    if [ $EXIT_STATUS != 0 ]; then
+      exit 1
     fi
+  fi
 fi
 
 # Save application.properties file?
@@ -71,11 +75,15 @@ whiptail --title "Сохранение введённых параметров" 
 SAVE_APPLICATION_PROPERTIES=$?
 
 # Prepare application.properties file:
-if [ "$PROTOCOL_TYPE" != "OTHER" ]; then
-    XSD_FILENAME=$PWD/$PROTOCOL_TYPE/xsd/XSD_CDA_$PROTOCOL_TYPE/CDA.xsd
+if [ "$PROTOCOL_TYPE" == "LAB_V4" ] || [ "$PROTOCOL_TYPE" == "CITOL_V1" ]; then
+  XSD_FILENAME=$PWD/$PROTOCOL_TYPE/xsd/XSD_CDA/CDA.xsd
+elif [ "$PROTOCOL_TYPE" != "OTHER" ]; then
+  XSD_FILENAME=$PWD/$PROTOCOL_TYPE/xsd/XSD_CDA_$PROTOCOL_TYPE/CDA.xsd
 fi
-if [ "$PROTOCOL_TYPE" != "OTHER" ]; then
-    SCHEMATRON_FILENAME=$PWD/$PROTOCOL_TYPE/schematron/schematron.sch
+if [ "$PROTOCOL_TYPE" == "LAB_V4" ] || [ "$PROTOCOL_TYPE" == "CITOL_V1" ]; then
+  SCHEMATRON_FILENAME=
+elif [ "$PROTOCOL_TYPE" != "OTHER" ]; then
+  SCHEMATRON_FILENAME=$PWD/$PROTOCOL_TYPE/schematron/schematron.sch
 fi
 echo "validator.input.xml=$FILENAME
 validator.input.xsd=$XSD_FILENAME
@@ -89,9 +97,9 @@ java -jar -Dapplication.properties="$PROPERTIES_FILENAME" *.jar
 
 # Remove application.properties file if necessary
 if [ $SAVE_APPLICATION_PROPERTIES = 1 ]; then
-    rm "$PROPERTIES_FILENAME"
+  rm "$PROPERTIES_FILENAME"
 else
-    echo "Введённые параметры сохранены в файл $PROPERTIES_FILENAME
+  echo "Введённые параметры сохранены в файл $PROPERTIES_FILENAME
 Для повторной проверки используйте команду:
 java -jar -Dapplication.properties=$PROPERTIES_FILENAME *.jar"
 fi
