@@ -85,13 +85,13 @@ validator.input.xml.clear-xml-namespace-on-schematron-validation=true
 " >> "$PROPERTIES_FILENAME"
 
 # Run validator with parameters
-java -jar -Dapplication.properties="$PROPERTIES_FILENAME" ./simple-xml-validator.jar
+java -jar -Dapplication.properties="$PROPERTIES_FILENAME" *.jar
 
 # Remove application.properties file if necessary
 if [ $SAVE_APPLICATION_PROPERTIES = 1 ]; then
     rm "$PROPERTIES_FILENAME"
 else
-    echo "Введённые параметры сохранены в файл $PROPERTIES_FILENAME.
+    echo "Введённые параметры сохранены в файл $PROPERTIES_FILENAME
 Для повторной проверки используйте команду:
-java -jar -Dapplication.properties=$PROPERTIES_FILENAME ./simple-xml-validator.jar"
+java -jar -Dapplication.properties=$PROPERTIES_FILENAME *.jar"
 fi

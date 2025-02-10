@@ -6,7 +6,7 @@
 
     <groupId>com.github.dreamw4lker</groupId>
     <artifactId>simplexval</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -79,6 +79,12 @@
                                     <includes>
                                         <include>**/*.properties</include>
                                         <include>**/*.txt</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>scripts</directory>
+                                    <includes>
+                                        <include>**/*.sh</include>
                                     </includes>
                                 </resource>
                             </resources>
