@@ -28,6 +28,8 @@ HTI_VERSIONS=(2)
 # Начало выгрузки
 for index in ${!PROTOCOL_TYPES[*]}
 do
+  echo "[ Downloading ] Protocol: ${PROTOCOL_TYPES[$index]}, OID: ${PROTOCOL_OIDS[$index]}"
+
   # Выгрузка репозитория одного протокола
   git clone "https://$1:$2@git.minzdrav.gov.ru/semd/${PROTOCOL_OIDS[$index]}.git"
   cd ${PROTOCOL_OIDS[$index]}
@@ -40,6 +42,7 @@ do
   do
     # Делаем checkout ветки (одна ветка - одна версия протокола)
     PROTOCOL_VERSION="${PROTOCOL_TYPES[$index]}_V$version"
+    echo "[ Checkout ] to ${PROTOCOL_VERSION}"
     git checkout "${PROTOCOL_OIDS[$index]}.$version"
 
     # Обработка папок с XSD-файлами
