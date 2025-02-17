@@ -29,15 +29,15 @@ public class SchematronValidator {
         return aResSCH.applySchematronValidationToSVRL(new StringStreamSource(fixedXmlFile));
     }
 
-    public ValidationResult validate(String xmlContent, PropertiesBean properties) throws Exception {
-        if (ValidatorMode.XSD.equals(properties.getValidatorMode())) {
+    public ValidationResult validate(String xmlContent, ValidatorMode validatorMode, String schematronFilename) throws Exception {
+        if (ValidatorMode.XSD.equals(validatorMode)) {
             return ValidationResult.SKIPPED;
         }
 
         log.info("Schematron validation started");
-        log.info("Schematron file: «{}»", properties.getSchematronFilename());
+        log.info("Schematron file: «{}»", schematronFilename);
 
-        SchematronOutputType result = validateXMLViaPureSchematron(new File(properties.getSchematronFilename()), xmlContent);
+        SchematronOutputType result = validateXMLViaPureSchematron(new File(schematronFilename), xmlContent);
         List<SVRLFailedAssert> assertList = SVRLHelper.getAllFailedAssertions(result);
         for (int i = 0; i < assertList.size(); i++) {
             SVRLFailedAssert failedAssert = assertList.get(i);

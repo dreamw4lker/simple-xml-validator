@@ -54,7 +54,7 @@ fi
 # Extra parameters for OTHER protocol type
 if [ "$PROTOCOL_TYPE" = "OTHER" ]; then
   if [ "$VALIDATION_TYPE" == "XSD" ] || [ "$VALIDATION_TYPE" == "ALL" ]; then
-    XSD_FILENAME=$(whiptail --title  "Путь до XSD-файла" --inputbox "Путь до главного файла XSD-схемы" 10 60 CDA.xsd 3>&1 1>&2 2>&3)
+    XSD_FILENAME_1=$(whiptail --title  "Путь до XSD-файла" --inputbox "Путь до главного файла XSD-схемы" 10 60 CDA.xsd 3>&1 1>&2 2>&3)
     EXIT_STATUS=$?
     if [ $EXIT_STATUS != 0 ]; then
       exit 1
@@ -75,20 +75,28 @@ whiptail --title "Сохранение введённых параметров" 
 SAVE_APPLICATION_PROPERTIES=$?
 
 # Prepare application.properties file:
-if [ "$PROTOCOL_TYPE" == "LAB_V4" ] || [ "$PROTOCOL_TYPE" == "CITOL_V1" ]; then
-  XSD_FILENAME=$PWD/$PROTOCOL_TYPE/xsd/XSD_CDA/CDA.xsd
-elif [ "$PROTOCOL_TYPE" != "OTHER" ]; then
-  XSD_FILENAME=$PWD/$PROTOCOL_TYPE/xsd/XSD_CDA_$PROTOCOL_TYPE/CDA.xsd
+XSD_FILENAME_1=$PWD/$PROTOCOL_TYPE/xsd/XSD_CDA/CDA.xsd
+if [ "$PROTOCOL_TYPE" != "LAB_V4" ] && [ "$PROTOCOL_TYPE" != "CITOL_V1" ] && [ "$PROTOCOL_TYPE" != "OTHER" ]; then
+  XSD_FILENAME_2=$PWD/$PROTOCOL_TYPE/xsd/XSD_CDA_$PROTOCOL_TYPE/CDA.xsd
 fi
 if [ "$PROTOCOL_TYPE" == "LAB_V4" ] || [ "$PROTOCOL_TYPE" == "CITOL_V1" ]; then
   SCHEMATRON_FILENAME=
 elif [ "$PROTOCOL_TYPE" != "OTHER" ]; then
   SCHEMATRON_FILENAME=$PWD/$PROTOCOL_TYPE/schematron/schematron.sch
 fi
-echo "validator.input.xml=$FILENAME
-validator.input.xsd=$XSD_FILENAME
-validator.input.schematron=$SCHEMATRON_FILENAME
+
+echo "# Files to validate
+validator.input.xml.1=$FILENAME
+# XSD schema main files
+validator.input.xsd.1=$XSD_FILENAME_1" > "$PROPERTIES_FILENAME"
+if [ "$PROTOCOL_TYPE" != "LAB_V4" ] && [ "$PROTOCOL_TYPE" != "CITOL_V1" ] && [ "$PROTOCOL_TYPE" != "OTHER" ]; then
+  echo "validator.input.xsd.2=$XSD_FILENAME_2" >> "$PROPERTIES_FILENAME"
+fi
+echo "# Schematron files
+validator.input.schematron.1=$SCHEMATRON_FILENAME
+# Available validation modes: XSD, SCHEMATRON, ALL
 validator.mode=$VALIDATION_TYPE
+# Clear XML namespace on Schematron validation (if needed)
 validator.input.xml.clear-xml-namespace-on-schematron-validation=true
 " >> "$PROPERTIES_FILENAME"
 

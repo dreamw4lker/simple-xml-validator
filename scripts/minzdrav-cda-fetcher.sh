@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Внутренние коды типов протоколов
+# Internal protocol types
 PROTOCOL_TYPES=(
 "LAB"
 "CITOL"
@@ -9,7 +9,7 @@ PROTOCOL_TYPES=(
 "HTI"
 )
 
-# Внешние OIDs типов протоколов
+# External protocol OIDs
 PROTOCOL_OIDS=(
 "1.2.643.5.1.13.13.15.18"
 "1.2.643.5.1.13.13.15.20"
@@ -18,39 +18,45 @@ PROTOCOL_OIDS=(
 "1.2.643.5.1.13.13.15.19"
 )
 
-# Версии типов протоколов, которые требуется выгрузить
+# Protocol versions to download
 LAB_VERSIONS=(4 5)
 CITOL_VERSIONS=(1 2)
 MBIO_VERSIONS=(1)
 CONSULT_VERSIONS=(5)
 HTI_VERSIONS=(2)
 
-# Начало выгрузки
+# Read parameters
+if [ $# -eq 0 ] || [ $# -eq 1 ]; then
+  echo "Укажите 2 параметра: логин и пароль от git.minzdrav.gov.ru"
+  exit 1
+fi
+
+# Start downloading process
 for index in ${!PROTOCOL_TYPES[*]}
 do
   echo "[ Downloading ] Protocol: ${PROTOCOL_TYPES[$index]}, OID: ${PROTOCOL_OIDS[$index]}"
 
-  # Выгрузка репозитория одного протокола
+  # Clone one protocol repo
   git clone "https://$1:$2@git.minzdrav.gov.ru/semd/${PROTOCOL_OIDS[$index]}.git"
   cd ${PROTOCOL_OIDS[$index]}
 
-  # Чтение массива версий одного протокола
+  # Read an array of protocol versions
   PROTOCOL_VERSIONS_ARR="${PROTOCOL_TYPES[$index]}_VERSIONS"[*]
 
-  # Для каждой версии:
+  # For each version:
   for version in ${!PROTOCOL_VERSIONS_ARR}
   do
-    # Делаем checkout ветки (одна ветка - одна версия протокола)
+    # Checkout branch (one branch - one protocol version)
     PROTOCOL_VERSION="${PROTOCOL_TYPES[$index]}_V$version"
     echo "[ Checkout ] to ${PROTOCOL_VERSION}"
     git checkout "${PROTOCOL_OIDS[$index]}.$version"
 
-    # Обработка папок с XSD-файлами
+    # Proccessing XSD files folders
     for folder in ./xsd/*;
     do
       XSD_FOLDER="$(basename "$folder")"
       mkdir -p "../$PROTOCOL_VERSION/xsd"
-      # Папка "XSD CDA" есть всегда, другие папки - везде, кроме устаревших протоколов LAB_V4 и CITOL_V1
+      # Folder "XSD CDA" is always available, another one is available for each protocol except LAB_V4 and CITOL_V1
       if [ "$XSD_FOLDER" == "XSD CDA" ]; then
         cp -R "$folder" "../$PROTOCOL_VERSION/xsd/XSD_CDA"
       else
@@ -61,13 +67,14 @@ do
       fi
     done
 
-    # Schematron-файлы отсутствуют у устаревших протоколов LAB_V4 и CITOL_V1
+    # Schematron files are not available for outdated protocols LAB_V4 and CITOL_V1
     if [ "${PROTOCOL_VERSION}" == "LAB_V4" ] || [ "${PROTOCOL_VERSION}" == "CITOL_V1" ]; then
       continue
     fi
 
-    # Обработка Schematron-файлов:
-    # при копировании сам файл переименовывается в schematron.sch, а рядом создаётся .txt-файл с оригинальным именем
+    # Processing Schematron files:
+    # Original schematron file will be renamed to "schematron.sch".
+    # Additional .txt-file will be placed nearby with the original schematron filename
     SCH_FILE=$(find "./schematron/" -type f -name "*.sch" | head -n 1)
     if [ -z "$SCH_FILE" ]; then
       echo "Schematron-файл для $PROTOCOL_VERSION не найден"
@@ -83,6 +90,6 @@ do
     fi
   done
 
-  # Возвращаемся в стартовую папку для выгрузки нового репозитория
+  # Turn back to start folder to process another repo
   cd ".."
 done

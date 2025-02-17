@@ -25,16 +25,16 @@ import java.util.List;
 public class XSDValidator {
     private static final Logger log = LoggerFactory.getLogger(XSDValidator.class);
 
-    public ValidationResult validate(String xmlContent, PropertiesBean properties) throws SAXException, IOException {
-        if (ValidatorMode.SCHEMATRON.equals(properties.getValidatorMode())) {
+    public ValidationResult validate(String xmlContent, ValidatorMode validatorMode, String xsdFilename) throws SAXException, IOException {
+        if (ValidatorMode.SCHEMATRON.equals(validatorMode)) {
             return ValidationResult.SKIPPED;
         }
 
         log.info("XSD validation started");
-        log.info("XSD file: «{}»", properties.getXsdFilename());
+        log.info("XSD file: «{}»", xsdFilename);
 
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = schemaFactory.newSchema(new StreamSource(new File(properties.getXsdFilename())));
+        Schema schema = schemaFactory.newSchema(new StreamSource(new File(xsdFilename)));
         Validator validator = schema.newValidator();
         XSDXmlErrorHandler xsdErrorHandler = new XSDXmlErrorHandler();
         validator.setErrorHandler(xsdErrorHandler);

@@ -2,22 +2,24 @@ package com.github.dreamw4lker.simplexval.beans;
 
 import com.github.dreamw4lker.simplexval.enums.ValidatorMode;
 
+import java.util.List;
+
 /**
  * Бин с параметрами приложения
  */
 public class PropertiesBean {
     private final ValidatorMode validatorMode;
-    private final String xmlFilename;
-    private final String xsdFilename;
-    private final String schematronFilename;
+    private final List<String> xmlFilenames;
+    private final List<String> xsdFilenames;
+    private final List<String> schematronFilenames;
     private final boolean clearXmlNamespaceOnSchematronValidation;
 
-    public PropertiesBean(ValidatorMode validatorMode, String xmlFilename, String xsdFilename,
-                          String schematronFilename, boolean clearXmlNamespaceOnSchematronValidation) {
+    public PropertiesBean(ValidatorMode validatorMode, List<String> xmlFilenames, List<String> xsdFilenames,
+                          List<String> schematronFilenames, boolean clearXmlNamespaceOnSchematronValidation) {
         this.validatorMode = validatorMode;
-        this.xmlFilename = xmlFilename;
-        this.xsdFilename = xsdFilename;
-        this.schematronFilename = schematronFilename;
+        this.xmlFilenames = xmlFilenames;
+        this.xsdFilenames = xsdFilenames;
+        this.schematronFilenames = schematronFilenames;
         this.clearXmlNamespaceOnSchematronValidation = clearXmlNamespaceOnSchematronValidation;
     }
 
@@ -25,16 +27,16 @@ public class PropertiesBean {
         return validatorMode;
     }
 
-    public String getXmlFilename() {
-        return xmlFilename;
+    public List<String> getXmlFilenames() {
+        return xmlFilenames;
     }
 
-    public String getXsdFilename() {
-        return xsdFilename;
+    public List<String> getXsdFilenames() {
+        return xsdFilenames;
     }
 
-    public String getSchematronFilename() {
-        return schematronFilename;
+    public List<String> getSchematronFilenames() {
+        return schematronFilenames;
     }
 
     public boolean isClearXmlNamespaceOnSchematronValidation() {

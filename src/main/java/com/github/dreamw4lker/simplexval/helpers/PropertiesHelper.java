@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -36,11 +38,18 @@ public class PropertiesHelper {
             throw ex;
         }
 
-        //Получение XML-файла для проверки
-        String xmlFilename = properties.getProperty("validator.input.xml");
-        if (xmlFilename == null || xmlFilename.isEmpty()) {
-            log.error("Incorrect «validator.input.xml» value: XML file must be specified");
-            throw new IllegalArgumentException();
+        //Получение XML-файлов для проверки
+        List<String> xmlFilenames = new ArrayList<>();
+        int index = 1;
+        String propPrefix = "validator.input.xml.";
+        while (properties.containsKey(propPrefix + index)) {
+            String xmlFilename = properties.getProperty(propPrefix + index);
+            if (xmlFilename == null || xmlFilename.isEmpty()) {
+                log.error("Incorrect «{}» value: XML file must be specified", propPrefix + index);
+                throw new IllegalArgumentException();
+            }
+            xmlFilenames.add(xmlFilename);
+            index++;
         }
 
         //Получение флага, следует ли очищать namespace при валидации через Schematron
@@ -53,26 +62,38 @@ public class PropertiesHelper {
             isClearNamespace = Boolean.parseBoolean(isClearNamespaceString);
         }
 
-        //Получение XSD-файла со схемой (только в режимах XSD и ALL)
-        String xsdFilename = null;
+        //Получение XSD-файлов со схемами (только в режимах XSD и ALL)
+        List<String> xsdFilenames = new ArrayList<>();
         if (Set.of(ValidatorMode.XSD, ValidatorMode.ALL).contains(validatorMode)) {
-            xsdFilename = properties.getProperty("validator.input.xsd");
-            if (xsdFilename == null || xsdFilename.isEmpty()) {
-                log.error("Incorrect «validator.input.xsd» value: XSD (XML Schema definition) file must be specified");
-                throw new IllegalArgumentException();
+            index = 1;
+            propPrefix = "validator.input.xsd.";
+            while (properties.containsKey(propPrefix + index)) {
+                String xsdFilename = properties.getProperty(propPrefix + index);
+                if (xsdFilename == null || xsdFilename.isEmpty()) {
+                    log.error("Incorrect «{}» value: XSD (XML Schema definition) file must be specified", propPrefix + index);
+                    throw new IllegalArgumentException();
+                }
+                xsdFilenames.add(xsdFilename);
+                index++;
             }
         }
 
-        //Получение Schematron-файла (только в режимах SCHEMATRON и ALL)
-        String schematronFilename = null;
+        //Получение Schematron-файлов (только в режимах SCHEMATRON и ALL)
+        List<String> schematronFilenames = new ArrayList<>();
         if (Set.of(ValidatorMode.SCHEMATRON, ValidatorMode.ALL).contains(validatorMode)) {
-            schematronFilename = properties.getProperty("validator.input.schematron");
-            if (schematronFilename == null || schematronFilename.isEmpty()) {
-                log.error("Incorrect «validator.input.schematron» value: Schematron file must be specified");
-                throw new IllegalArgumentException("Incorrect «validator.input.schematron» value: Schematron file must be specified");
+            index = 1;
+            propPrefix = "validator.input.schematron.";
+            while (properties.containsKey(propPrefix + index)) {
+                String schematronFilename = properties.getProperty(propPrefix + index);
+                if (schematronFilename == null || schematronFilename.isEmpty()) {
+                    log.error("Incorrect «{}» value: Schematron file must be specified", propPrefix + index);
+                    throw new IllegalArgumentException();
+                }
+                schematronFilenames.add(schematronFilename);
+                index++;
             }
         }
 
-        return new PropertiesBean(validatorMode, xmlFilename, xsdFilename, schematronFilename, isClearNamespace);
+        return new PropertiesBean(validatorMode, xmlFilenames, xsdFilenames, schematronFilenames, isClearNamespace);
     }
 }
