@@ -7,6 +7,7 @@ PROTOCOL_TYPES=(
 "MBIO"
 "CONSULT"
 "HTI"
+"PATAN"
 )
 
 # External protocol OIDs
@@ -16,6 +17,7 @@ PROTOCOL_OIDS=(
 "1.2.643.5.1.13.13.15.120"
 "1.2.643.5.1.13.13.15.13"
 "1.2.643.5.1.13.13.15.19"
+"1.2.643.5.1.13.13.15.21"
 )
 
 # Protocol versions to download
@@ -24,6 +26,7 @@ CITOL_VERSIONS=(1 2)
 MBIO_VERSIONS=(1)
 CONSULT_VERSIONS=(5)
 HTI_VERSIONS=(2)
+PATAN_VERSIONS=(3)
 
 # Read parameters
 if [ $# -eq 0 ] || [ $# -eq 1 ]; then
