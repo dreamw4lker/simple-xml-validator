@@ -5,35 +5,38 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" prefHeight="500.0" prefWidth="1000.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
-  <padding>
-    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-  </padding>
-   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
-      <children>
-         <Label text="Интерфейс для выгрузки XSD / Schematron-файлов из репозитория" />
-         <Hyperlink fx:id="minzdravLink" text="git.minzdrav.gov.ru" />
-      </children>
-   </HBox>
-   <HBox>
-      <children>
-         <TextField fx:id="loginField" minWidth="250.0" promptText="Логин">
-            <HBox.margin>
-               <Insets right="10.0" />
-            </HBox.margin>
-         </TextField>
-         <PasswordField fx:id="passwordField" minWidth="250.0" promptText="Пароль">
-            <HBox.margin>
-               <Insets right="10.0" />
-            </HBox.margin></PasswordField>
-        <Button fx:id="submitBtn" prefHeight="26.0" prefWidth="81.0" text="Скачать" />
-      </children>
-      <VBox.margin>
-         <Insets />
-      </VBox.margin>
-   </HBox>
-   <TextArea fx:id="logField" editable="false" prefHeight="600.0" prefWidth="200.0">
-      <font>
-         <Font name="DejaVu Sans Mono" size="13.0" />
-      </font></TextArea>
+<VBox alignment="CENTER" prefHeight="500.0" prefWidth="1000.0" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.github.dreamw4lker.simplexvalfx.controllers.CDAFetcherController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+        <children>
+            <Label text="Интерфейс для выгрузки XSD / Schematron-файлов из репозитория"/>
+            <Hyperlink fx:id="minzdravLink" text="git.minzdrav.gov.ru"/>
+        </children>
+    </HBox>
+    <HBox>
+        <children>
+            <TextField fx:id="loginField" minWidth="250.0" promptText="Логин">
+                <HBox.margin>
+                    <Insets right="10.0"/>
+                </HBox.margin>
+            </TextField>
+            <PasswordField fx:id="passwordField" minWidth="250.0" promptText="Пароль">
+                <HBox.margin>
+                    <Insets right="10.0"/>
+                </HBox.margin>
+            </PasswordField>
+            <Button fx:id="submitBtn" prefHeight="26.0" prefWidth="81.0" text="Скачать"/>
+        </children>
+        <VBox.margin>
+            <Insets/>
+        </VBox.margin>
+    </HBox>
+    <TextArea fx:id="logField" editable="false" prefHeight="600.0" prefWidth="200.0">
+        <font>
+            <Font name="DejaVu Sans Mono" size="13.0"/>
+        </font>
+    </TextArea>
 </VBox>

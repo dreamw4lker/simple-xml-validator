@@ -1,6 +1,6 @@
 package com.github.dreamw4lker.simplexvalfx.service;
 
-import com.github.dreamw4lker.simplexvalfx.enums.ProtocolType;
+import com.github.dreamw4lker.simplexvalfx.beans.enums.ProtocolType;
 import com.github.dreamw4lker.simplexvalfx.utils.TextAreaProgressMonitor;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;

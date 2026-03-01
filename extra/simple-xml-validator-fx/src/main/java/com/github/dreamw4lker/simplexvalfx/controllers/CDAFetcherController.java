@@ -54,6 +54,7 @@ public class CDAFetcherController {
                 alert.showAndWait();
                 return;
             }
+            //todo спросить подтверждение
             changeFieldsActivity(true);
 
             Thread thread = new Thread(() -> {

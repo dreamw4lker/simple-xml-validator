@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.dreamw4lker.simplexvalfx.controllers.MainFormController">
+   <children>
+      <Button fx:id="cdaFetchBtn" mnemonicParsing="false" text="CDA Fetcher" />
+      <Label text="Тип протокола:" />
+      <ComboBox fx:id="protocolTypeComboBox" promptText="Выберите тип протокола" />
+      <Label text="XML-файл для проверки:" />
+      <Button fx:id="chooseFileBtn" mnemonicParsing="false" text="Выберите файл" />
+      <Label fx:id="filePathLabel" text="Файл не выбран" />
+      <HBox>
+         <children>
+            <Label text="Тип проверки:" />
+            <CheckBox mnemonicParsing="false" selected="true" text="XSD" fx:id="xsdCheckbox" />
+            <CheckBox fx:id="schematronCheckbox" mnemonicParsing="false" selected="true" text="Schematron" />
+         </children>
+      </HBox>
+      <Button fx:id="submitBtn" mnemonicParsing="false" text="Выполнить проверку" />
+      <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0">
+         <font>
+            <Font name="DejaVu Sans Mono" size="13.0" />
+         </font>
+      </TextArea>
+   </children>
+</VBox>
