@@ -1,29 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.dreamw4lker.simplexvalfx.controllers.MainFormController">
+<VBox prefHeight="500.0" prefWidth="1000.0" spacing="10.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.dreamw4lker.simplexvalfx.controllers.MainFormController">
    <children>
-      <Button fx:id="cdaFetchBtn" mnemonicParsing="false" text="CDA Fetcher" />
-      <Label text="Тип протокола:" />
-      <ComboBox fx:id="protocolTypeComboBox" promptText="Выберите тип протокола" />
-      <Label text="XML-файл для проверки:" />
-      <Button fx:id="chooseFileBtn" mnemonicParsing="false" text="Выберите файл" />
-      <Label fx:id="filePathLabel" text="Файл не выбран" />
       <HBox>
          <children>
-            <Label text="Тип проверки:" />
-            <CheckBox mnemonicParsing="false" selected="true" text="XSD" fx:id="xsdCheckbox" />
-            <CheckBox fx:id="schematronCheckbox" mnemonicParsing="false" selected="true" text="Schematron" />
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Тип протокола:" />
+                  <ComboBox fx:id="protocolTypeComboBox" promptText="Выберите тип протокола" />
+               </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </VBox>
+            <VBox alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="cdaFetchBtn" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="CDA Fetcher" />
+                  <Label fx:id="noProtocolsLabel" text="XSD / Schematron-файлы для валидации не найдены&#10;Используйте CDA Fetcher для получения файлов валидации" textAlignment="RIGHT" textFill="RED" />
+               </children>
+            </VBox>
          </children>
       </HBox>
-      <Button fx:id="submitBtn" mnemonicParsing="false" text="Выполнить проверку" />
-      <TextArea fx:id="logTextArea" prefHeight="200.0" prefWidth="200.0">
+      <Label text="XML-файл для проверки:">
+         <VBox.margin>
+            <Insets bottom="-10.0" />
+         </VBox.margin></Label>
+      <HBox alignment="CENTER_LEFT" spacing="10.0">
+         <children>
+            <Button fx:id="chooseFileBtn" mnemonicParsing="false" text="Выберите файл" />
+            <Label fx:id="filePathLabel" text="Файл не выбран">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+      <HBox spacing="10.0">
+         <children>
+            <Label text="Тип проверки:">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin></Label>
+            <RadioButton fx:id="checkTypeAllRadioBtn" mnemonicParsing="false" selected="true" text="Все">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin></RadioButton>
+            <RadioButton fx:id="checkTypeXsdRadioBtn" mnemonicParsing="false" text="Только XSD">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin></RadioButton>
+            <RadioButton fx:id="checkTypeSchematronRadioBtn" mnemonicParsing="false" text="Только Schematron">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </RadioButton>
+         </children>
+         <VBox.margin>
+            <Insets top="10.0" />
+         </VBox.margin>
+      </HBox>
+      <HBox>
+         <children>
+            <VBox>
+               <children>
+                  <Button fx:id="submitBtn" mnemonicParsing="false" text="Выполнить проверку" />
+               </children>
+            </VBox>
+            <VBox alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="clearLogBtn" mnemonicParsing="false" text="Очистить лог" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <TextArea fx:id="logTextArea" editable="false" promptText="Лог проверки" VBox.vgrow="ALWAYS">
          <font>
             <Font name="DejaVu Sans Mono" size="13.0" />
          </font>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
       </TextArea>
    </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
 </VBox>

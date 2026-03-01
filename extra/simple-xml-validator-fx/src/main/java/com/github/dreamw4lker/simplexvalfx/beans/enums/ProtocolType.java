@@ -42,7 +42,7 @@ public enum ProtocolType {
                 }
                 result.add(new ProtocolTypeVersionBean(
                         code,
-                        protocolType.getName() + " (v" + protocolTypeVersion + ")",
+                        "[" + code + "] " + protocolType.getName() + " (v" + protocolTypeVersion + ")",
                         xsdFilenames,
                         schematronFilenames
                 ));

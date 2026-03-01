@@ -19,9 +19,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.file.PathUtils;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
@@ -29,7 +31,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +45,9 @@ public class MainFormController {
     private Button cdaFetchBtn;
 
     @FXML
+    private Label noProtocolsLabel;
+
+    @FXML
     private ComboBox<ProtocolTypeVersionBean> protocolTypeComboBox;
 
     @FXML
@@ -50,13 +57,19 @@ public class MainFormController {
     private Label filePathLabel;
 
     @FXML
-    private CheckBox xsdCheckbox;
+    private RadioButton checkTypeAllRadioBtn;
 
     @FXML
-    private CheckBox schematronCheckbox;
+    private RadioButton checkTypeXsdRadioBtn;
+
+    @FXML
+    private RadioButton checkTypeSchematronRadioBtn;
 
     @FXML
     private Button submitBtn;
+
+    @FXML
+    private Button clearLogBtn;
 
     @FXML
     private TextArea logTextArea;
@@ -82,15 +95,37 @@ public class MainFormController {
         rootLogger.addAppender(appender);
     }
 
+    private void checkProtocolsPath() {
+        Path protocolsPath = Paths.get("protocols");
+        try {
+            if (Files.isDirectory(protocolsPath) && !PathUtils.isEmptyDirectory(protocolsPath)) {
+                noProtocolsLabel.setVisible(false);
+            } else {
+                noProtocolsLabel.setVisible(true);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e); //todo
+        }
+    }
+
     public void initialize() {
         setupLogging(logTextArea);
+        checkProtocolsPath();
 
+        List<ProtocolTypeVersionBean> protocolTypeVersionBeans = ProtocolType.getProtocolTypeVersionBeans();
         protocolTypeComboBox.setConverter(new ProtocolTypeVersionConverter());
-        protocolTypeComboBox.getItems().addAll(ProtocolType.getProtocolTypeVersionBeans());
+        protocolTypeComboBox.getItems().addAll(protocolTypeVersionBeans);
+        protocolTypeComboBox.setValue(protocolTypeVersionBeans.getFirst());
+
+        ToggleGroup toggleGroup = new ToggleGroup();
+        checkTypeAllRadioBtn.setToggleGroup(toggleGroup);
+        checkTypeXsdRadioBtn.setToggleGroup(toggleGroup);
+        checkTypeSchematronRadioBtn.setToggleGroup(toggleGroup);
+
 
         cdaFetchBtn.setOnAction((event) -> {
             // 1. Load the new FXML file
-            Parent root = null;
+            Parent root;
             try {
                 root = FXMLLoader.load(Objects.requireNonNull(SimpleXMLValidatorApplication.class.getResource("cda-fetch-form.fxml")));
             } catch (IOException e) {
@@ -101,10 +136,17 @@ public class MainFormController {
             Stage stage = new Stage();
 
             // 3. Create a new Scene (or re-use an existing one) and set it on the stage
-            Scene scene = new Scene(root, 1000, 500);
+            Scene scene = new Scene(root, 800, 500);
+            stage.setMinWidth(800);
+            stage.setMinHeight(500);
             stage.setScene(scene);
             stage.setTitle("CDA Fetcher");
-            stage.show();
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(((Node) event.getSource()).getScene().getWindow());
+            stage.setOnHiding((closeEvent) -> {
+                checkProtocolsPath();
+            });
+            stage.showAndWait();
         });
 
         chooseFileBtn.setOnAction((event) -> {
@@ -122,11 +164,18 @@ public class MainFormController {
         });
 
         submitBtn.setOnAction((event) -> {
+            if (selectedXMLFile == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Ошибка");
+                alert.setHeaderText("Выберите XML-файл для проверки");
+                alert.showAndWait();
+                return;
+            }
+
             //todo проверки перед запуском треда
             Thread thread = new Thread(() -> {
-                ValidatorMode validatorMode = (xsdCheckbox.isSelected() && schematronCheckbox.isSelected())
-                        ? ValidatorMode.ALL
-                        : xsdCheckbox.isSelected() ? ValidatorMode.XSD : ValidatorMode.SCHEMATRON; //todo сделать выбор а не чекбоксы
+                ValidatorMode validatorMode = checkTypeAllRadioBtn.isSelected() ? ValidatorMode.ALL
+                        : checkTypeXsdRadioBtn.isSelected() ? ValidatorMode.XSD : ValidatorMode.SCHEMATRON;
                 ProtocolTypeVersionBean protocolTypeVersionBean = protocolTypeComboBox.getValue(); //todo check selection
 
 
@@ -169,12 +218,18 @@ public class MainFormController {
                 log.info("Validation completed for file «{}»", selectedXMLFile);
                 log.info("Results:");
                 log.info("  XSD validation:");
+                if (XSDResults.isEmpty()) {
+                    log.info("? No results");
+                }
                 for (int i = 0; i < XSDResults.size(); i++) {
                     ValidationResult result = XSDResults.get(i);
                     log.info("{} XSD.{}: {}", result.getIcon(), (i + 1), result);
                 }
 
                 log.info("  Schematron validation:");
+                if (schematronResults.isEmpty()) {
+                    log.info("? No results");
+                }
                 for (int i = 0; i < schematronResults.size(); i++) {
                     ValidationResult result = schematronResults.get(i);
                     log.info("{} Schematron.{}: {}", result.getIcon(), (i + 1), result);
@@ -182,6 +237,10 @@ public class MainFormController {
             });
             thread.setDaemon(true);
             thread.start();
+        });
+
+        clearLogBtn.setOnAction((event) -> {
+            logTextArea.clear();
         });
     }
 }

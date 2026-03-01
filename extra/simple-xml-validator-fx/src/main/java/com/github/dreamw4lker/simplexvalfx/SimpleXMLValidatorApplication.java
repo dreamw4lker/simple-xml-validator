@@ -12,8 +12,9 @@ public class SimpleXMLValidatorApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("main-form.fxml"));
-
         primaryStage.setScene(new Scene(fxmlLoader.load(), 1000, 500));
+        primaryStage.setMinWidth(1000);
+        primaryStage.setMinHeight(500);
         primaryStage.setTitle("XML Validator");
         primaryStage.show();
     }

@@ -43,14 +43,14 @@ public class CDAFetcherController {
             }
         });
 
-        submitBtn.setOnMouseClicked(event -> {
+        submitBtn.setOnAction((event) -> {
             String login = loginField.getText();
             String password = passwordField.getText();
 
             if (ObjectUtils.isEmpty(login) || ObjectUtils.isEmpty(password)) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Ошибка");
-                alert.setHeaderText("Необходимо указать логин и пароль");
+                alert.setHeaderText("Укажите логин и пароль от git.minzdrav.gov.ru");
                 alert.showAndWait();
                 return;
             }
