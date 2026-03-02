@@ -28,25 +28,30 @@ public class SchematronValidator {
         return aResSCH.applySchematronValidationToSVRL(new StringStreamSource(fixedXmlFile));
     }
 
-    public ValidationResult validate(String xmlContent, ValidatorMode validatorMode, String schematronFilename) throws Exception {
+    public ValidationResult validate(String xmlContent, ValidatorMode validatorMode, String schematronFilename) {
         if (ValidatorMode.XSD.equals(validatorMode)) {
             return ValidationResult.SKIPPED;
         }
 
-        log.info("Schematron validation started");
-        log.info("Schematron file: «{}»", schematronFilename);
+        try {
+            log.info("Schematron validation started");
+            log.info("Schematron file: «{}»", schematronFilename);
 
-        SchematronOutputType result = validateXMLViaPureSchematron(new File(schematronFilename), xmlContent);
-        List<SVRLFailedAssert> assertList = SVRLHelper.getAllFailedAssertions(result);
-        for (int i = 0; i < assertList.size(); i++) {
-            SVRLFailedAssert failedAssert = assertList.get(i);
-            log.error("→ Failed Schematron rule #{}", i + 1);
-            log.error("  Element: {}", failedAssert.getLocation());
-            log.error("  Rule: {}", failedAssert.getText());
+            SchematronOutputType result = validateXMLViaPureSchematron(new File(schematronFilename), xmlContent);
+            List<SVRLFailedAssert> assertList = SVRLHelper.getAllFailedAssertions(result);
+            for (int i = 0; i < assertList.size(); i++) {
+                SVRLFailedAssert failedAssert = assertList.get(i);
+                log.error("→ Failed Schematron rule #{}", i + 1);
+                log.error("  Element: {}", failedAssert.getLocation());
+                log.error("  Rule: {}", failedAssert.getText());
+            }
+
+            ValidationResult validationResult = assertList.isEmpty() ? ValidationResult.VALID : ValidationResult.NOT_VALID;
+            log.info("Schematron validation completed");
+            return validationResult;
+        } catch (Exception e) {
+            log.error("Schematron validation exception", e);
+            return ValidationResult.NOT_VALID;
         }
-
-        ValidationResult validationResult = assertList.size() > 0 ? ValidationResult.NOT_VALID : ValidationResult.VALID;
-        log.info("Schematron validation completed");
-        return validationResult;
     }
 }

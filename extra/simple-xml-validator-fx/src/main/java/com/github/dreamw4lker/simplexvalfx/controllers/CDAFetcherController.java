@@ -1,6 +1,7 @@
 package com.github.dreamw4lker.simplexvalfx.controllers;
 
 import com.github.dreamw4lker.simplexvalfx.service.CDAFetcherService;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -14,7 +15,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
-//todo: выключить debug-логирование гита
+import static com.github.dreamw4lker.simplexvalfx.utils.LoggingUtils.setupLogging;
+
 public class CDAFetcherController {
     @FXML
     private Hyperlink minzdravLink;
@@ -32,19 +34,16 @@ public class CDAFetcherController {
     private Button submitBtn;
 
     public void initialize() {
-        minzdravLink.setOnAction((event) -> {
-            this.onMinzdravLinkClicked();
-        });
+        setupLogging(logField, CDAFetcherService.class);
 
-        submitBtn.setOnAction((event) -> {
-            this.onSubmit();
-        });
+        minzdravLink.setOnAction(this::onMinzdravLinkClick);
+        submitBtn.setOnAction(this::onSubmit);
     }
 
     /**
      * Действия по нажатию на ссылку git.minzdrav.gov.ru
      */
-    private void onMinzdravLinkClicked() {
+    private void onMinzdravLinkClick(ActionEvent event) {
         Desktop desktop = Desktop.getDesktop();
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
             new Thread(() -> {
@@ -60,7 +59,7 @@ public class CDAFetcherController {
     /**
      * Действия по нажатию на кнопку скачивания
      */
-    private void onSubmit() {
+    private void onSubmit(ActionEvent event) {
         String login = loginField.getText();
         String password = passwordField.getText();
 

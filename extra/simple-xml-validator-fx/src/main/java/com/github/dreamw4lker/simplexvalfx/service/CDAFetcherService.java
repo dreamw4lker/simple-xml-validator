@@ -1,54 +1,33 @@
 package com.github.dreamw4lker.simplexvalfx.service;
 
+import ch.qos.logback.classic.Logger;
 import com.github.dreamw4lker.simplexvalfx.beans.enums.OutdatedProtocolVersions;
 import com.github.dreamw4lker.simplexvalfx.beans.enums.ProtocolType;
 import com.github.dreamw4lker.simplexvalfx.utils.TextAreaProgressMonitor;
-import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
-//todo log через logger
 public class CDAFetcherService {
+    private static final Logger log = (Logger) LoggerFactory.getLogger(CDAFetcherService.class);
+
     private final TextArea logField;
 
     public CDAFetcherService(TextArea logField) {
         this.logField = logField;
-    }
-
-    private void appendLog(String text, Object... params) {
-        if (!ObjectUtils.isEmpty(text)) {
-            if (!text.endsWith("\n")) {
-                text += "\n";
-            }
-        }
-
-        String finalText = text;
-        Platform.runLater(() -> {
-            logField.appendText(String.format(finalText, params));
-        });
-    }
-
-    public static String getStackTrace(Throwable throwable) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        throwable.printStackTrace(pw);
-        return sw.toString();
     }
 
     /**
@@ -70,12 +49,13 @@ public class CDAFetcherService {
             }
             Files.createDirectories(targetDir);
         } catch (IOException e) {
-            appendLog("Не удалось создать папку для хранения протоколов: %s", getStackTrace(e));
+            log.error("Не удалось создать папку для хранения протоколов", e);
         }
 
         //Обрабатываем все протоколы
         for (ProtocolType protocolType : ProtocolType.values()) {
             processProtocol(protocolType, username, password);
+            return;
         }
     }
 
@@ -87,7 +67,7 @@ public class CDAFetcherService {
      * @param password     пароль или токен для аутентификации в Git
      */
     public void processProtocol(ProtocolType protocolType, String username, String password) {
-        appendLog("[ Downloading ] Протокол: %s, OID: %s", protocolType.getCode(), protocolType.getOid());
+        log.info("[ Downloading ] Протокол: {}, OID: {}", protocolType.getCode(), protocolType.getOid());
         try {
             String repoUrl = String.format("https://%s:%s@git.minzdrav.gov.ru/semd/%s.git", username, password, protocolType.getOid());
             try {
@@ -110,7 +90,7 @@ public class CDAFetcherService {
                 // Обработка каждой версии протокола
                 for (Integer version : protocolType.getVersions()) {
                     String versionName = protocolType.getCode() + "_V" + version;
-                    appendLog("[ Checkout ] %s начато", versionName);
+                    log.info("[ Checkout ] {}", versionName);
 
                     String branchName = protocolType.getOid() + "." + version;
                     git.checkout()
@@ -127,15 +107,15 @@ public class CDAFetcherService {
                     if (!OutdatedProtocolVersions.getListValues().contains(versionName)) {
                         processSchematronFiles(tempDir.toPath(), targetDir, versionName);
                     }
-                    appendLog("[ Checkout ] %s завершено", versionName);
+                    log.info("[ Checkout ] {} завершено", versionName);
                 }
                 git.close();
             } catch (IOException | GitAPIException e) {
                 Thread.currentThread().interrupt();
-                appendLog("Ошибка при клонировании репозитория: %s", getStackTrace(e));
+                log.error("Ошибка при клонировании репозитория", e);
             }
         } catch (Exception e) {
-            appendLog("Ошибка при обработке протокола %s: %s", protocolType.getCode(), getStackTrace(e));
+            log.error("Ошибка при обработке протокола {}", protocolType.getCode(), e);
         }
     }
 
@@ -160,10 +140,11 @@ public class CDAFetcherService {
                 String xsdFolder = folder.getFileName().toString();
 
                 if (xsdFolder.equals("XSD CDA")) {
-                    // Копируем XSD CDA
+                    // Копируем первую XSD CDA
                     Path dest = xsdTargetDir.resolve("XSD_CDA");
                     PathUtils.copyDirectory(folder, dest);
                 } else {
+                    // Вторая XSD CDA присутствует только у новых протоколов
                     if (OutdatedProtocolVersions.getListValues().contains(versionName)) {
                         continue;
                     }
@@ -195,7 +176,7 @@ public class CDAFetcherService {
                 TrueFileFilter.INSTANCE
         );
         if (files.isEmpty()) {
-            appendLog("Schematron-файл для %s не найден", versionName);
+            log.error("Schematron-файл для {} не найден", versionName);
             return;
         }
 
@@ -210,7 +191,7 @@ public class CDAFetcherService {
             Path txtFile = schematronTargetDir.resolve(originalFilename + ".txt");
             Files.createFile(txtFile);
         } catch (IOException e) {
-            appendLog("Ошибка при копировании Schematron-файла для %s: %s", versionName, e.getStackTrace());
+            log.error("Ошибка при копировании Schematron-файла для {}", versionName, e);
         }
     }
 }

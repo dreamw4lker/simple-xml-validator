@@ -20,6 +20,7 @@ public class TextAreaLogbackAppender extends AppenderBase<ILoggingEvent> {
         String formattedMessage = layout.doLayout(event);
         // Обновляем UI в специальном потоке JavaFX
         Platform.runLater(() -> {
+            System.out.println(formattedMessage);
             textArea.appendText(formattedMessage);
         });
     }
