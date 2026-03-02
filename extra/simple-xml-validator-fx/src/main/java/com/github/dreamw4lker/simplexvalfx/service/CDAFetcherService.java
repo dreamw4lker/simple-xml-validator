@@ -53,7 +53,6 @@ public class CDAFetcherService {
         //Обрабатываем все протоколы
         for (ProtocolType protocolType : ProtocolType.values()) {
             processProtocol(protocolType, username, password);
-            return;
         }
     }
 
