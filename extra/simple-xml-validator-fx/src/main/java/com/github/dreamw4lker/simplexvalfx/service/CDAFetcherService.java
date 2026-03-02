@@ -1,5 +1,6 @@
 package com.github.dreamw4lker.simplexvalfx.service;
 
+import com.github.dreamw4lker.simplexvalfx.beans.enums.OutdatedProtocolVersions;
 import com.github.dreamw4lker.simplexvalfx.beans.enums.ProtocolType;
 import com.github.dreamw4lker.simplexvalfx.utils.TextAreaProgressMonitor;
 import javafx.application.Platform;
@@ -21,12 +22,10 @@ import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.List;
 
+//todo log через logger
 public class CDAFetcherService {
     private final TextArea logField;
-
-    private final List<String> OUTDATED_PROTOCOLS = List.of("LAB_V4", "CITOL_V1");
 
     public CDAFetcherService(TextArea logField) {
         this.logField = logField;
@@ -125,7 +124,7 @@ public class CDAFetcherService {
 
                     processXsdFiles(tempDir.toPath(), targetDir, versionName);
 
-                    if (!OUTDATED_PROTOCOLS.contains(versionName)) {
+                    if (!OutdatedProtocolVersions.getListValues().contains(versionName)) {
                         processSchematronFiles(tempDir.toPath(), targetDir, versionName);
                     }
                     appendLog("[ Checkout ] %s завершено", versionName);
@@ -165,7 +164,7 @@ public class CDAFetcherService {
                     Path dest = xsdTargetDir.resolve("XSD_CDA");
                     PathUtils.copyDirectory(folder, dest);
                 } else {
-                    if (OUTDATED_PROTOCOLS.contains(versionName)) {
+                    if (OutdatedProtocolVersions.getListValues().contains(versionName)) {
                         continue;
                     }
 

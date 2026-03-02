@@ -12,7 +12,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
+//todo: выключить debug-логирование гита
 public class CDAFetcherController {
     @FXML
     private Hyperlink minzdravLink;
@@ -30,42 +32,69 @@ public class CDAFetcherController {
     private Button submitBtn;
 
     public void initialize() {
-        minzdravLink.setOnMouseClicked((event) -> {
-            Desktop desktop = Desktop.getDesktop();
-            if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                new Thread(() -> {
-                    try {
-                        desktop.browse(new URI("https://git.minzdrav.gov.ru"));
-                    } catch (IOException | URISyntaxException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).start();
-            }
+        minzdravLink.setOnAction((event) -> {
+            this.onMinzdravLinkClicked();
         });
 
         submitBtn.setOnAction((event) -> {
-            String login = loginField.getText();
-            String password = passwordField.getText();
-
-            if (ObjectUtils.isEmpty(login) || ObjectUtils.isEmpty(password)) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Ошибка");
-                alert.setHeaderText("Укажите логин и пароль от git.minzdrav.gov.ru");
-                alert.showAndWait();
-                return;
-            }
-            //todo спросить подтверждение
-            changeFieldsActivity(true);
-
-            Thread thread = new Thread(() -> {
-                new CDAFetcherService(logField).downloadAllProtocols(login, password);
-                changeFieldsActivity(false);
-            });
-            thread.setDaemon(true);
-            thread.start();
+            this.onSubmit();
         });
     }
 
+    /**
+     * Действия по нажатию на ссылку git.minzdrav.gov.ru
+     */
+    private void onMinzdravLinkClicked() {
+        Desktop desktop = Desktop.getDesktop();
+        if (desktop.isSupported(Desktop.Action.BROWSE)) {
+            new Thread(() -> {
+                try {
+                    desktop.browse(new URI("https://git.minzdrav.gov.ru"));
+                } catch (IOException | URISyntaxException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+        }
+    }
+
+    /**
+     * Действия по нажатию на кнопку скачивания
+     */
+    private void onSubmit() {
+        String login = loginField.getText();
+        String password = passwordField.getText();
+
+        //Проверка формы ввода
+        if (ObjectUtils.isEmpty(login) || ObjectUtils.isEmpty(password)) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Укажите логин и пароль от git.minzdrav.gov.ru");
+            alert.showAndWait();
+            return;
+        }
+
+        //Отображение модального окна-подтверждения
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Подтверждение");
+        alert.setHeaderText("Вы действительно хотите обновить протоколы?");
+        alert.setContentText("Все файлы, находящиеся в папке protocols, будут перезаписаны");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
+            return;
+        }
+
+        changeFieldsActivity(true);
+
+        //Запуск скачивания в отдельном потоке
+        new Thread(() -> {
+            new CDAFetcherService(logField).downloadAllProtocols(login, password);
+            changeFieldsActivity(false);
+        }).start();
+    }
+    /**
+     * Блокировка/разблокировка полей на форме
+     */
     private void changeFieldsActivity(boolean isDisabled) {
         loginField.setDisable(isDisabled);
         passwordField.setDisable(isDisabled);

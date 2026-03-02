@@ -32,12 +32,12 @@ public enum ProtocolType {
 
                 List<Path> xsdFilenames = new ArrayList<>();
                 xsdFilenames.add(Paths.get(".", "protocols", code, "xsd", "XSD_CDA", "CDA.xsd"));
-                if (!List.of("LAB_V4", "CITOL_V1").contains(code)) { //todo extract to external
-                    xsdFilenames.add(Paths.get(".", "protocols", code, "xsd", "XSD_CDA_" + code, "xsd", "CDA.xsd"));
+                if (!OutdatedProtocolVersions.getListValues().contains(code)) {
+                    xsdFilenames.add(Paths.get(".", "protocols", code, "xsd", "XSD_CDA_" + code, "CDA.xsd"));
                 }
 
                 List<Path> schematronFilenames = new ArrayList<>();
-                if (!List.of("LAB_V4", "CITOL_V1").contains(code)) { //todo extract to external
+                if (!OutdatedProtocolVersions.getListValues().contains(code)) {
                     schematronFilenames.add(Paths.get(".", "protocols", code, "schematron", "schematron.sch"));
                 }
                 result.add(new ProtocolTypeVersionBean(
