@@ -8,18 +8,17 @@ import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.transform.StringStreamSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
  * Валидация XML-файла по Schematron-файлу
  */
+@Slf4j
 public class SchematronValidator {
-    private static final Logger log = LoggerFactory.getLogger(SchematronValidator.class);
-
     public static SchematronOutputType validateXMLViaPureSchematron(File schematronFile, String fixedXmlFile) throws Exception {
         final ISchematronResource aResSCH = SchematronResourceSCH.fromFile(schematronFile);
         if (!aResSCH.isValidSchematron()) {
@@ -28,16 +27,16 @@ public class SchematronValidator {
         return aResSCH.applySchematronValidationToSVRL(new StringStreamSource(fixedXmlFile));
     }
 
-    public ValidationResult validate(String xmlContent, ValidatorMode validatorMode, String schematronFilename) {
+    public ValidationResult validate(String xmlContent, ValidatorMode validatorMode, Path schematronPath) {
         if (ValidatorMode.XSD.equals(validatorMode)) {
             return ValidationResult.SKIPPED;
         }
 
         try {
             log.info("Schematron validation started");
-            log.info("Schematron file: «{}»", schematronFilename);
+            log.info("Schematron file: «{}»", schematronPath);
 
-            SchematronOutputType result = validateXMLViaPureSchematron(new File(schematronFilename), xmlContent);
+            SchematronOutputType result = validateXMLViaPureSchematron(schematronPath.toFile(), xmlContent);
             List<SVRLFailedAssert> assertList = SVRLHelper.getAllFailedAssertions(result);
             for (int i = 0; i < assertList.size(); i++) {
                 SVRLFailedAssert failedAssert = assertList.get(i);

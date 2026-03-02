@@ -1,6 +1,5 @@
 package com.github.dreamw4lker.simplexvalfx.controllers;
 
-import ch.qos.logback.classic.Logger;
 import com.github.dreamw4lker.simplexvalfx.SimpleXMLValidatorApplication;
 import com.github.dreamw4lker.simplexvalfx.beans.ProtocolTypeVersionConverter;
 import com.github.dreamw4lker.simplexvalfx.beans.enums.ProtocolType;
@@ -20,10 +19,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.PathUtils;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,9 +36,8 @@ import java.util.Objects;
 
 import static com.github.dreamw4lker.simplexvalfx.utils.LoggingUtils.setupLogging;
 
+@Slf4j
 public class MainFormController {
-    private static final Logger log = (Logger) LoggerFactory.getLogger(MainFormController.class);
-
     @FXML
     private Button cdaFetchBtn;
 
@@ -66,6 +63,9 @@ public class MainFormController {
     private RadioButton checkTypeSchematronRadioBtn;
 
     @FXML
+    private CheckBox clearXMLNSCheckBox;
+
+    @FXML
     private Button submitBtn;
 
     @FXML
@@ -75,6 +75,7 @@ public class MainFormController {
     private TextArea logTextArea;
 
     private File selectedXMLFile = null;
+    private File lastSelectedDirectory = null;
 
     public void initialize() {
         setupLogging(logTextArea, MainFormController.class);
@@ -95,74 +96,7 @@ public class MainFormController {
 
         cdaFetchBtn.setOnAction(this::onCdaFetchBtnClick);
         chooseFileBtn.setOnAction(this::onChooseFileClick);
-
-        submitBtn.setOnAction((event) -> {
-            if (selectedXMLFile == null) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Ошибка");
-                alert.setHeaderText("Выберите XML-файл для проверки");
-                alert.showAndWait();
-                return;
-            }
-
-            Thread thread = new Thread(() -> {
-                ValidatorMode validatorMode = checkTypeAllRadioBtn.isSelected() ? ValidatorMode.ALL
-                        : checkTypeXsdRadioBtn.isSelected() ? ValidatorMode.XSD : ValidatorMode.SCHEMATRON;
-                ProtocolTypeVersionBean protocolTypeVersionBean = protocolTypeComboBox.getValue(); //todo check selection
-
-
-                //Чтение XML-файла в строку
-                String content;
-                try {
-                    content = IOUtils.toString(new FileInputStream(selectedXMLFile), StandardCharsets.UTF_8);
-                } catch (IOException e) {
-                    throw new RuntimeException(e); //todo
-                }
-
-                log.info("XML file: «{}»", selectedXMLFile);
-
-                //Валидация по XSD
-                List<ValidationResult> XSDResults = new ArrayList<>();
-                for (Path xsdFilename : protocolTypeVersionBean.getXsdFilenames()) {
-                    XSDResults.add(new XSDValidator().validate(content, validatorMode, xsdFilename.toString())); //todo tostring?
-                }
-
-                //Валидация по Schematron.
-                //В некоторых Schematron-файлах не указан namespace по умолчанию.
-                //Если установлен флаг, вырезаем его и из прочитанного документа
-                if (true/*properties.isClearXmlNamespaceOnSchematronValidation()*/) { //todo
-                    content = content.replaceFirst("xmlns=\".*?\"", "xmlns=\"\"");
-                }
-
-                List<ValidationResult> schematronResults = new ArrayList<>();
-                for (Path schematronFilename : protocolTypeVersionBean.getSchematronFilenames()) {
-                    schematronResults.add(new SchematronValidator().validate(content, validatorMode, schematronFilename.toString())); //todo tostring?
-                }
-
-                log.info("Validation completed for file «{}»", selectedXMLFile);
-                log.info("Results:");
-                log.info("  XSD validation:");
-                if (XSDResults.isEmpty()) {
-                    log.info("? No results");
-                }
-                for (int i = 0; i < XSDResults.size(); i++) {
-                    ValidationResult result = XSDResults.get(i);
-                    log.info("{} XSD.{}: {}", result.getIcon(), (i + 1), result);
-                }
-
-                log.info("  Schematron validation:");
-                if (schematronResults.isEmpty()) {
-                    log.info("? No results");
-                }
-                for (int i = 0; i < schematronResults.size(); i++) {
-                    ValidationResult result = schematronResults.get(i);
-                    log.info("{} Schematron.{}: {}", result.getIcon(), (i + 1), result);
-                }
-            });
-            thread.setDaemon(true);
-            thread.start();
-        });
-
+        submitBtn.setOnAction(this::onSubmit);
         clearLogBtn.setOnAction(this::onClearLogBtnClick);
     }
 
@@ -217,11 +151,83 @@ public class MainFormController {
                 new FileChooser.ExtensionFilter("XML-файлы", "*.xml"),
                 new FileChooser.ExtensionFilter("Все файлы", "*.*")
         );
+        if (lastSelectedDirectory != null && lastSelectedDirectory.exists()) {
+            fileChooser.setInitialDirectory(lastSelectedDirectory);
+        }
         Window window = ((Node) event.getSource()).getScene().getWindow();
         selectedXMLFile = fileChooser.showOpenDialog(window);
         if (selectedXMLFile != null) {
             filePathLabel.setText(selectedXMLFile.getAbsolutePath());
+            lastSelectedDirectory = selectedXMLFile.getParentFile();
         }
+    }
+
+    /**
+     * Действия при нажатии на кнопку "Выполнить проверку"
+     */
+    private void onSubmit(ActionEvent event) {
+        if (selectedXMLFile == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка");
+            alert.setHeaderText("Выберите XML-файл для проверки");
+            alert.showAndWait();
+            return;
+        }
+
+        new Thread(() -> {
+            ValidatorMode validatorMode = checkTypeAllRadioBtn.isSelected() ? ValidatorMode.ALL
+                    : checkTypeXsdRadioBtn.isSelected() ? ValidatorMode.XSD : ValidatorMode.SCHEMATRON;
+            ProtocolTypeVersionBean protocolTypeVersionBean = protocolTypeComboBox.getValue();
+
+            //Чтение XML-файла в строку
+            String content;
+            try {
+                content = IOUtils.toString(new FileInputStream(selectedXMLFile), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                log.error("Не удалось прочитать файл «{}»", selectedXMLFile, e);
+                return;
+            }
+
+            log.info("XML file: «{}»", selectedXMLFile);
+
+            //Валидация по XSD
+            List<ValidationResult> XSDResults = new ArrayList<>();
+            for (Path xsdFilename : protocolTypeVersionBean.getXsdFilenames()) {
+                XSDResults.add(new XSDValidator().validate(content, validatorMode, xsdFilename));
+            }
+
+            //Валидация по Schematron.
+            //В некоторых Schematron-файлах не указан namespace по умолчанию.
+            //Если установлен флаг, вырезаем его и из прочитанного документа
+            if (clearXMLNSCheckBox.isSelected()) {
+                content = content.replaceFirst("xmlns=\".*?\"", "xmlns=\"\"");
+            }
+
+            List<ValidationResult> schematronResults = new ArrayList<>();
+            for (Path schematronFilename : protocolTypeVersionBean.getSchematronFilenames()) {
+                schematronResults.add(new SchematronValidator().validate(content, validatorMode, schematronFilename));
+            }
+
+            log.info("Validation completed for file «{}»", selectedXMLFile);
+            log.info("Results:");
+            log.info("  XSD validation:");
+            if (XSDResults.isEmpty()) {
+                log.info("? No results");
+            }
+            for (int i = 0; i < XSDResults.size(); i++) {
+                ValidationResult result = XSDResults.get(i);
+                log.info("{} XSD.{}: {}", result.getIcon(), (i + 1), result);
+            }
+
+            log.info("  Schematron validation:");
+            if (schematronResults.isEmpty()) {
+                log.info("? No results");
+            }
+            for (int i = 0; i < schematronResults.size(); i++) {
+                ValidationResult result = schematronResults.get(i);
+                log.info("{} Schematron.{}: {}", result.getIcon(), (i + 1), result);
+            }
+        }).start();
     }
 
     /**

@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.awt.*;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 import static com.github.dreamw4lker.simplexvalfx.utils.LoggingUtils.setupLogging;
 
+@Slf4j
 public class CDAFetcherController {
     @FXML
     private Hyperlink minzdravLink;
@@ -34,6 +36,7 @@ public class CDAFetcherController {
     private Button submitBtn;
 
     public void initialize() {
+        setupLogging(logField, CDAFetcherController.class);
         setupLogging(logField, CDAFetcherService.class);
 
         minzdravLink.setOnAction(this::onMinzdravLinkClick);

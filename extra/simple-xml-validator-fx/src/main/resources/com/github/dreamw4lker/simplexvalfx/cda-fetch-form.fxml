@@ -39,7 +39,7 @@
             <Insets />
         </VBox.margin>
     </HBox>
-    <TextArea fx:id="logField" editable="false" VBox.vgrow="ALWAYS">
+    <TextArea fx:id="logField" editable="false" promptText="Лог выгрузки" VBox.vgrow="ALWAYS">
         <font>
             <Font name="DejaVu Sans Mono" size="13.0" />
         </font>

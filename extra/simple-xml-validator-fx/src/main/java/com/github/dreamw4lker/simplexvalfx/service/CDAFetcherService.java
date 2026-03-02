@@ -1,10 +1,10 @@
 package com.github.dreamw4lker.simplexvalfx.service;
 
-import ch.qos.logback.classic.Logger;
 import com.github.dreamw4lker.simplexvalfx.beans.enums.OutdatedProtocolVersions;
 import com.github.dreamw4lker.simplexvalfx.beans.enums.ProtocolType;
 import com.github.dreamw4lker.simplexvalfx.utils.TextAreaProgressMonitor;
 import javafx.scene.control.TextArea;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
@@ -12,7 +12,6 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.StoredConfig;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,9 +20,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
+@Slf4j
 public class CDAFetcherService {
-    private static final Logger log = (Logger) LoggerFactory.getLogger(CDAFetcherService.class);
-
     private final TextArea logField;
 
     public CDAFetcherService(TextArea logField) {

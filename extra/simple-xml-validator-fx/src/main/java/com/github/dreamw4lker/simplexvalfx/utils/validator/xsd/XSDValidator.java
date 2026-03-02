@@ -2,8 +2,7 @@ package com.github.dreamw4lker.simplexvalfx.utils.validator.xsd;
 
 import com.github.dreamw4lker.simplexvalfx.beans.enums.ValidationResult;
 import com.github.dreamw4lker.simplexvalfx.beans.enums.ValidatorMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -16,24 +15,24 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
  * Валидация XML-файла по XSD-схеме
  */
+@Slf4j
 public class XSDValidator {
-    private static final Logger log = LoggerFactory.getLogger(XSDValidator.class);
-
-    public ValidationResult validate(String xmlContent, ValidatorMode validatorMode, String xsdFilename) {
+    public ValidationResult validate(String xmlContent, ValidatorMode validatorMode, Path xsdPath) {
         if (ValidatorMode.SCHEMATRON.equals(validatorMode)) {
             return ValidationResult.SKIPPED;
         }
 
         try {
             log.info("XSD validation started");
-            log.info("XSD file: «{}»", xsdFilename);
+            log.info("XSD file: «{}»", xsdPath);
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = schemaFactory.newSchema(new StreamSource(new File(xsdFilename)));
+            Schema schema = schemaFactory.newSchema(new StreamSource(xsdPath.toFile()));
             Validator validator = schema.newValidator();
             XSDXmlErrorHandler xsdErrorHandler = new XSDXmlErrorHandler();
             validator.setErrorHandler(xsdErrorHandler);
