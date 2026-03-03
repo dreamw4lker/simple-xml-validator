@@ -39,12 +39,21 @@
          </VBox.margin></Label>
       <HBox alignment="CENTER_LEFT" spacing="10.0">
          <children>
-            <Button fx:id="chooseFileBtn" mnemonicParsing="false" text="Выберите файл" />
-            <Label fx:id="filePathLabel" text="Файл не выбран">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </Label>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                     <children>
+                        <Button fx:id="chooseFileBtn" mnemonicParsing="false" text="Выберите файл" />
+                        <Label fx:id="filePathLabel" text="Файл не выбран" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox>
+               <children>
+                  <Button fx:id="base64ToXmlBtn" mnemonicParsing="false" text="Base64 -&gt; XML" VBox.vgrow="NEVER" />
+               </children>
+            </VBox>
          </children>
       </HBox>
       <HBox spacing="10.0">

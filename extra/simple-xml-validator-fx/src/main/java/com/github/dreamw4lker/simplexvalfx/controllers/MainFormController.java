@@ -15,10 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.Window;
+import javafx.stage.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.PathUtils;
@@ -52,6 +49,9 @@ public class MainFormController {
 
     @FXML
     private Label filePathLabel;
+
+    @FXML
+    private Button base64ToXmlBtn;
 
     @FXML
     private RadioButton checkTypeAllRadioBtn;
@@ -96,6 +96,7 @@ public class MainFormController {
 
         cdaFetchBtn.setOnAction(this::onCdaFetchBtnClick);
         chooseFileBtn.setOnAction(this::onChooseFileClick);
+        base64ToXmlBtn.setOnAction(this::onBase64ToXmlBtnClick);
         submitBtn.setOnAction(this::onSubmit);
         clearLogBtn.setOnAction(this::onClearLogBtnClick);
     }
@@ -160,6 +161,29 @@ public class MainFormController {
             filePathLabel.setText(selectedXMLFile.getAbsolutePath());
             lastSelectedDirectory = selectedXMLFile.getParentFile();
         }
+    }
+
+    /**
+     * Действия при нажатии на кнопку "Base64 -> XML"
+     */
+    private void onBase64ToXmlBtnClick(ActionEvent event) {
+        Parent root;
+        try {
+            root = FXMLLoader.load(Objects.requireNonNull(SimpleXMLValidatorApplication.class.getResource("base64-to-xml-form.fxml")));
+        } catch (IOException e) {
+            log.error("Ошибка при открытии формы «Base64 to XML»", e);
+            return;
+        }
+
+        Stage stage = new Stage();
+        stage.initStyle(StageStyle.DECORATED);
+        stage.setTitle("Base64 to XML");
+        stage.setMinWidth(800);
+        stage.setMinHeight(500);
+
+        Scene scene = new Scene(root, 800, 500);
+        stage.setScene(scene);
+        stage.show();
     }
 
     /**
