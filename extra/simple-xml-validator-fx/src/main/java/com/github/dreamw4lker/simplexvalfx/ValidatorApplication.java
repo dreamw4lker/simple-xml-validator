@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class SimpleXMLValidatorApplication extends Application {
+public class ValidatorApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {

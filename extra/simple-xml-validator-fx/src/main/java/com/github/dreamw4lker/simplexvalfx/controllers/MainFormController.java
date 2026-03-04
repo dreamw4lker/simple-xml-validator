@@ -1,6 +1,6 @@
 package com.github.dreamw4lker.simplexvalfx.controllers;
 
-import com.github.dreamw4lker.simplexvalfx.SimpleXMLValidatorApplication;
+import com.github.dreamw4lker.simplexvalfx.ValidatorApplication;
 import com.github.dreamw4lker.simplexvalfx.beans.ProtocolTypeVersionConverter;
 import com.github.dreamw4lker.simplexvalfx.beans.enums.ProtocolType;
 import com.github.dreamw4lker.simplexvalfx.beans.ProtocolTypeVersionBean;
@@ -8,6 +8,7 @@ import com.github.dreamw4lker.simplexvalfx.beans.enums.ValidationResult;
 import com.github.dreamw4lker.simplexvalfx.beans.enums.ValidatorMode;
 import com.github.dreamw4lker.simplexvalfx.utils.validator.schematron.SchematronValidator;
 import com.github.dreamw4lker.simplexvalfx.utils.validator.xsd.XSDValidator;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,7 +37,13 @@ import static com.github.dreamw4lker.simplexvalfx.utils.LoggingUtils.setupLoggin
 @Slf4j
 public class MainFormController {
     @FXML
-    private Button cdaFetchBtn;
+    private MenuItem exitMenuItem;
+
+    @FXML
+    private MenuItem cdaFetchMenuItem;
+
+    @FXML
+    private MenuItem base64ToXmlMenuItem;
 
     @FXML
     private Label noProtocolsLabel;
@@ -49,9 +56,6 @@ public class MainFormController {
 
     @FXML
     private Label filePathLabel;
-
-    @FXML
-    private Button base64ToXmlBtn;
 
     @FXML
     private RadioButton checkTypeAllRadioBtn;
@@ -94,9 +98,11 @@ public class MainFormController {
         checkTypeXsdRadioBtn.setToggleGroup(toggleGroup);
         checkTypeSchematronRadioBtn.setToggleGroup(toggleGroup);
 
-        cdaFetchBtn.setOnAction(this::onCdaFetchBtnClick);
+        exitMenuItem.setOnAction(this::onExit);
+        cdaFetchMenuItem.setOnAction(this::onCdaFetch);
+        base64ToXmlMenuItem.setOnAction(this::onBase64ToXml);
+
         chooseFileBtn.setOnAction(this::onChooseFileClick);
-        base64ToXmlBtn.setOnAction(this::onBase64ToXmlBtnClick);
         submitBtn.setOnAction(this::onSubmit);
         clearLogBtn.setOnAction(this::onClearLogBtnClick);
     }
@@ -116,12 +122,19 @@ public class MainFormController {
     }
 
     /**
-     * Действия при нажатии на кнопку "CDA Fetcher"
+     * Действия при выборе пункта меню "Выход"
      */
-    private void onCdaFetchBtnClick(ActionEvent event) {
+    private void onExit(ActionEvent event) {
+        Platform.exit();
+    }
+
+    /**
+     * Действия при выборе пункта меню "CDA Fetcher"
+     */
+    private void onCdaFetch(ActionEvent event) {
         Parent root;
         try {
-            root = FXMLLoader.load(Objects.requireNonNull(SimpleXMLValidatorApplication.class.getResource("cda-fetch-form.fxml")));
+            root = FXMLLoader.load(Objects.requireNonNull(ValidatorApplication.class.getResource("cda-fetch-form.fxml")));
         } catch (IOException e) {
             log.error("Ошибка при открытии формы «CDA Fetcher»", e);
             return;
@@ -135,11 +148,34 @@ public class MainFormController {
         stage.setScene(scene);
         stage.setTitle("CDA Fetcher");
         stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(((Node) event.getSource()).getScene().getWindow());
+        stage.initOwner(logTextArea.getScene().getWindow());
         stage.setOnHiding((closeEvent) -> {
             checkProtocolsPath();
         });
         stage.showAndWait();
+    }
+
+    /**
+     * Действия при выборе пункта меню "Конвертер Base64 -> XML"
+     */
+    private void onBase64ToXml(ActionEvent event) {
+        Parent root;
+        try {
+            root = FXMLLoader.load(Objects.requireNonNull(ValidatorApplication.class.getResource("base64-to-xml-form.fxml")));
+        } catch (IOException e) {
+            log.error("Ошибка при открытии формы «Base64 to XML»", e);
+            return;
+        }
+
+        Stage stage = new Stage();
+        stage.initStyle(StageStyle.DECORATED);
+        stage.setTitle("Base64 to XML");
+        stage.setMinWidth(800);
+        stage.setMinHeight(500);
+
+        Scene scene = new Scene(root, 800, 500);
+        stage.setScene(scene);
+        stage.show();
     }
 
     /**
@@ -161,29 +197,6 @@ public class MainFormController {
             filePathLabel.setText(selectedXMLFile.getAbsolutePath());
             lastSelectedDirectory = selectedXMLFile.getParentFile();
         }
-    }
-
-    /**
-     * Действия при нажатии на кнопку "Base64 -> XML"
-     */
-    private void onBase64ToXmlBtnClick(ActionEvent event) {
-        Parent root;
-        try {
-            root = FXMLLoader.load(Objects.requireNonNull(SimpleXMLValidatorApplication.class.getResource("base64-to-xml-form.fxml")));
-        } catch (IOException e) {
-            log.error("Ошибка при открытии формы «Base64 to XML»", e);
-            return;
-        }
-
-        Stage stage = new Stage();
-        stage.initStyle(StageStyle.DECORATED);
-        stage.setTitle("Base64 to XML");
-        stage.setMinWidth(800);
-        stage.setMinHeight(500);
-
-        Scene scene = new Scene(root, 800, 500);
-        stage.setScene(scene);
-        stage.show();
     }
 
     /**

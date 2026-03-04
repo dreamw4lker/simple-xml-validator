@@ -5,6 +5,9 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.Tooltip?>
@@ -12,106 +15,115 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="500.0" prefWidth="1000.0" spacing="10.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.dreamw4lker.simplexvalfx.controllers.MainFormController">
+<VBox prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.dreamw4lker.simplexvalfx.controllers.MainFormController">
    <children>
-      <HBox>
+      <MenuBar>
+        <menus>
+          <Menu mnemonicParsing="false" text="Файл">
+            <items>
+              <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="Выход" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Инструменты">
+            <items>
+              <MenuItem fx:id="cdaFetchMenuItem" mnemonicParsing="false" text="CDA Fetcher" />
+                  <MenuItem fx:id="base64ToXmlMenuItem" mnemonicParsing="false" text="Конвертер Base64 -&gt; XML" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <VBox spacing="10.0" VBox.vgrow="ALWAYS">
          <children>
-            <VBox HBox.hgrow="ALWAYS">
+            <HBox>
                <children>
-                  <Label text="Тип протокола:" />
-                  <ComboBox fx:id="protocolTypeComboBox" promptText="Выберите тип протокола" />
-               </children>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </VBox>
-            <VBox alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
-               <children>
-                  <Button fx:id="cdaFetchBtn" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="CDA Fetcher" />
-                  <Label fx:id="noProtocolsLabel" text="XSD / Schematron-файлы для валидации не найдены&#10;Используйте CDA Fetcher для получения файлов валидации" textAlignment="RIGHT" textFill="RED" />
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-      <Label text="XML-файл для проверки:">
-         <VBox.margin>
-            <Insets bottom="-10.0" />
-         </VBox.margin></Label>
-      <HBox alignment="CENTER_LEFT" spacing="10.0">
-         <children>
-            <VBox HBox.hgrow="ALWAYS">
-               <children>
-                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                  <VBox HBox.hgrow="ALWAYS">
                      <children>
-                        <Button fx:id="chooseFileBtn" mnemonicParsing="false" text="Выберите файл" />
-                        <Label fx:id="filePathLabel" text="Файл не выбран" HBox.hgrow="ALWAYS" />
+                        <Label text="Тип протокола:" />
+                        <ComboBox fx:id="protocolTypeComboBox" promptText="Выберите тип протокола" />
                      </children>
-                  </HBox>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="noProtocolsLabel" text="XSD / Schematron-файлы для валидации не найдены&#10;Используйте CDA Fetcher для получения файлов валидации" textAlignment="RIGHT" textFill="RED" />
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
-            <VBox>
+            </HBox>
+            <Label text="XML-файл для проверки:">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </Label>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
-                  <Button fx:id="base64ToXmlBtn" mnemonicParsing="false" text="Base64 -&gt; XML" VBox.vgrow="NEVER" />
+                  <Button fx:id="chooseFileBtn" mnemonicParsing="false" text="Выберите файл" />
+                  <Label fx:id="filePathLabel" text="Файл не выбран" HBox.hgrow="ALWAYS" />
                </children>
-            </VBox>
-         </children>
-      </HBox>
-      <HBox spacing="10.0">
-         <children>
-            <Label text="Тип проверки:">
-               <HBox.margin>
+            </HBox>
+            <HBox spacing="10.0">
+               <children>
+                  <Label text="Тип проверки:">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Label>
+                  <RadioButton fx:id="checkTypeAllRadioBtn" mnemonicParsing="false" selected="true" text="Все">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </RadioButton>
+                  <RadioButton fx:id="checkTypeXsdRadioBtn" mnemonicParsing="false" text="Только XSD">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </RadioButton>
+                  <RadioButton fx:id="checkTypeSchematronRadioBtn" mnemonicParsing="false" text="Только Schematron">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </RadioButton>
+                  <CheckBox fx:id="clearXMLNSCheckBox" mnemonicParsing="false" selected="true" text="Очистить XMLNS">
+                     <HBox.margin>
+                        <Insets left="50.0" />
+                     </HBox.margin>
+                     <tooltip>
+                        <Tooltip style="-fx-show-delay: 10ms;" text="Удаляет атрибут xmlns из прочитанного документа.&#10;Не следует снимать этот чекбокс при проверке протоколов с CDA от git.minzdrav.gov.ru" />
+                     </tooltip>
+                  </CheckBox>
+               </children>
+               <VBox.margin>
                   <Insets />
-               </HBox.margin></Label>
-            <RadioButton fx:id="checkTypeAllRadioBtn" mnemonicParsing="false" selected="true" text="Все">
-               <HBox.margin>
+               </VBox.margin>
+            </HBox>
+            <HBox>
+               <children>
+                  <VBox>
+                     <children>
+                        <Button fx:id="submitBtn" mnemonicParsing="false" text="Выполнить проверку" />
+                     </children>
+                  </VBox>
+                  <VBox alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Button fx:id="clearLogBtn" mnemonicParsing="false" text="Очистить лог" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <TextArea fx:id="logTextArea" editable="false" promptText="Лог проверки" VBox.vgrow="ALWAYS">
+               <font>
+                  <Font name="DejaVu Sans Mono" size="13.0" />
+               </font>
+               <VBox.margin>
                   <Insets />
-               </HBox.margin></RadioButton>
-            <RadioButton fx:id="checkTypeXsdRadioBtn" mnemonicParsing="false" text="Только XSD">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin></RadioButton>
-            <RadioButton fx:id="checkTypeSchematronRadioBtn" mnemonicParsing="false" text="Только Schematron">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </RadioButton>
-            <CheckBox fx:id="clearXMLNSCheckBox" mnemonicParsing="false" selected="true" text="Очистить XMLNS">
-               <HBox.margin>
-                  <Insets left="50.0" />
-               </HBox.margin>
-               <tooltip>
-                  <Tooltip style="-fx-show-delay: 10ms;" text="Удаляет атрибут xmlns из прочитанного документа.&#10;Не следует снимать этот чекбокс при проверке протоколов с CDA от git.minzdrav.gov.ru" />
-               </tooltip>
-            </CheckBox>
+               </VBox.margin>
+            </TextArea>
          </children>
          <VBox.margin>
-            <Insets top="10.0" />
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </VBox.margin>
-      </HBox>
-      <HBox>
-         <children>
-            <VBox>
-               <children>
-                  <Button fx:id="submitBtn" mnemonicParsing="false" text="Выполнить проверку" />
-               </children>
-            </VBox>
-            <VBox alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
-               <children>
-                  <Button fx:id="clearLogBtn" mnemonicParsing="false" text="Очистить лог" />
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-      <TextArea fx:id="logTextArea" editable="false" promptText="Лог проверки" VBox.vgrow="ALWAYS">
-         <font>
-            <Font name="DejaVu Sans Mono" size="13.0" />
-         </font>
-         <VBox.margin>
-            <Insets />
-         </VBox.margin>
-      </TextArea>
+      </VBox>
    </children>
-   <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-   </padding>
 </VBox>
