@@ -46,6 +46,9 @@ public class MainFormController {
     private MenuItem base64ToXmlMenuItem;
 
     @FXML
+    private MenuItem aboutMenuItem;
+
+    @FXML
     private Label noProtocolsLabel;
 
     @FXML
@@ -101,6 +104,7 @@ public class MainFormController {
         exitMenuItem.setOnAction(this::onExit);
         cdaFetchMenuItem.setOnAction(this::onCdaFetch);
         base64ToXmlMenuItem.setOnAction(this::onBase64ToXml);
+        aboutMenuItem.setOnAction(this::onAbout);
 
         chooseFileBtn.setOnAction(this::onChooseFileClick);
         submitBtn.setOnAction(this::onSubmit);
@@ -176,6 +180,33 @@ public class MainFormController {
         Scene scene = new Scene(root, 800, 500);
         stage.setScene(scene);
         stage.show();
+    }
+
+    /**
+     * Действия при выборе пункта меню "О программе"
+     */
+    private void onAbout(ActionEvent event) {
+        Parent root;
+        try {
+            root = FXMLLoader.load(Objects.requireNonNull(ValidatorApplication.class.getResource("about-form.fxml")));
+        } catch (IOException e) {
+            log.error("Ошибка при открытии формы «О программе»", e);
+            return;
+        }
+
+        Scene scene = new Scene(root, 600, 400);
+
+        Stage stage = new Stage();
+        stage.setMinWidth(600);
+        stage.setMinHeight(400);
+        stage.setScene(scene);
+        stage.setTitle("О программе");
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.initOwner(logTextArea.getScene().getWindow());
+        stage.setOnHiding((closeEvent) -> {
+            checkProtocolsPath();
+        });
+        stage.showAndWait();
     }
 
     /**
