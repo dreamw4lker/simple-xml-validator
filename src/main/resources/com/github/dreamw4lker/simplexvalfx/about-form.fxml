@@ -14,7 +14,7 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
-            <Label fx:id="versionLabel" text="Версия 2.0.3" />
+            <Label fx:id="versionLabel" text="Версия 2.0.4" />
          </children>
       </VBox>
       <Label text="Сведения о лицензии:" />
