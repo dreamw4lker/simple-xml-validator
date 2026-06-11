@@ -8,6 +8,9 @@ public class TextAreaProgressMonitor implements ProgressMonitor {
     private final TextArea textArea;
     private int totalWork;
     private int completed;
+    private long lastUpdateTime;
+
+    private static final long LOG_RATE_LIMIT = 1000L;
 
     public TextAreaProgressMonitor(TextArea textArea) {
         this.textArea = textArea;
@@ -24,6 +27,7 @@ public class TextAreaProgressMonitor implements ProgressMonitor {
     public void beginTask(String title, int totalWork) {
         this.totalWork = totalWork;
         this.completed = 0;
+        this.lastUpdateTime = 0;
 
         Platform.runLater(() -> {
             textArea.appendText(String.format("\nЗадача: %s\n", title));
@@ -36,6 +40,11 @@ public class TextAreaProgressMonitor implements ProgressMonitor {
     @Override
     public void update(int completed) {
         this.completed += completed;
+        long now = System.currentTimeMillis();
+        if (now - lastUpdateTime < LOG_RATE_LIMIT) {
+            return;
+        }
+        lastUpdateTime = now;
         int percentage = totalWork > 0 ? (this.completed * 100 / totalWork) : 0;
 
         Platform.runLater(() -> {
@@ -60,6 +69,7 @@ public class TextAreaProgressMonitor implements ProgressMonitor {
 
     @Override
     public void endTask() {
+        lastUpdateTime = 0;
         Platform.runLater(() -> {
             textArea.appendText("Задача выполнена\n");
         });

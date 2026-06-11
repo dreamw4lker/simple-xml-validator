@@ -31,17 +31,18 @@ public class CDAFetcherService {
     /**
      * Загружает все протоколы согласно конфигурации
      *
-     * @param username имя пользователя для аутентификации в Git
-     * @param password пароль или токен для аутентификации в Git
+     * @param username   имя пользователя для аутентификации в Git
+     * @param password   пароль или токен для аутентификации в Git
+     * @param saveGuides следует ли сохранять руководства из репозитория
      */
-    public void downloadAllProtocols(String username, String password) {
+    public void downloadAllProtocols(String username, String password, boolean saveGuides) {
         //Создаём папку для хранения протоколов
         try {
             Path targetDir = Paths.get(".", "protocols");
             // Если папка уже существует - копируем всё из неё в папку с постфиксом текущей даты/времени
             if (targetDir.toFile().exists() && targetDir.toFile().isDirectory()) {
                 Path outdatedDirectory =
-                        Paths.get(".","protocols_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")));
+                        Paths.get(".", "protocols_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")));
                 PathUtils.copyDirectory(targetDir, outdatedDirectory);
                 PathUtils.deleteDirectory(targetDir);
             }
@@ -52,7 +53,7 @@ public class CDAFetcherService {
 
         //Обрабатываем все протоколы
         for (ProtocolType protocolType : ProtocolType.values()) {
-            processProtocol(protocolType, username, password);
+            processProtocol(protocolType, username, password, saveGuides);
         }
     }
 
@@ -62,8 +63,9 @@ public class CDAFetcherService {
      * @param protocolType тип протокола
      * @param username     имя пользователя для аутентификации в Git
      * @param password     пароль или токен для аутентификации в Git
+     * @param saveGuides   следует ли сохранять руководства из репозитория
      */
-    public void processProtocol(ProtocolType protocolType, String username, String password) {
+    public void processProtocol(ProtocolType protocolType, String username, String password, boolean saveGuides) {
         log.info("[ Downloading ] Протокол: {}, OID: {}", protocolType.getCode(), protocolType.getOid());
         try {
             String repoUrl = String.format("https://%s:%s@git.minzdrav.gov.ru/semd/%s.git", username, password, protocolType.getOid());
@@ -100,6 +102,9 @@ public class CDAFetcherService {
                     Files.createDirectories(targetDir);
 
                     processXsdFiles(tempDir.toPath(), targetDir, versionName);
+                    if (saveGuides) {
+                        processGuideFiles(tempDir.toPath(), targetDir);
+                    }
 
                     if (!OutdatedProtocolVersions.getListValues().contains(versionName)) {
                         processSchematronFiles(tempDir.toPath(), targetDir, versionName);
@@ -151,6 +156,20 @@ public class CDAFetcherService {
                 }
             }
         }
+    }
+
+    /**
+     * Обрабатывает файлы руководств
+     */
+    private void processGuideFiles(Path repoPath, Path targetDir) throws IOException {
+        Path guideSourceDir = repoPath.resolve("guide");
+        Path guideTargetDir = targetDir.resolve("guide");
+
+        if (!Files.exists(guideSourceDir)) {
+            return;
+        }
+
+        PathUtils.copyDirectory(guideSourceDir, guideTargetDir);
     }
 
     /**

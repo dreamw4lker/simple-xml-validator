@@ -35,6 +35,9 @@ public class CDAFetcherController {
     @FXML
     private Button submitBtn;
 
+    @FXML
+    private CheckBox saveGuidesCheckBox;
+
     public void initialize() {
         setupLogging(logField, CDAFetcherController.class);
         setupLogging(logField, CDAFetcherService.class);
@@ -65,6 +68,7 @@ public class CDAFetcherController {
     private void onSubmit(ActionEvent event) {
         String login = loginField.getText();
         String password = passwordField.getText();
+        boolean saveGuides = saveGuidesCheckBox.isSelected();
 
         //Проверка формы ввода
         if (ObjectUtils.isEmpty(login) || ObjectUtils.isEmpty(password)) {
@@ -90,7 +94,7 @@ public class CDAFetcherController {
 
         //Запуск скачивания в отдельном потоке
         new Thread(() -> {
-            new CDAFetcherService(logField).downloadAllProtocols(login, password);
+            new CDAFetcherService(logField).downloadAllProtocols(login, password, saveGuides);
             changeFieldsActivity(false);
         }).start();
     }
@@ -101,5 +105,6 @@ public class CDAFetcherController {
         loginField.setDisable(isDisabled);
         passwordField.setDisable(isDisabled);
         submitBtn.setDisable(isDisabled);
+        saveGuidesCheckBox.setDisable(isDisabled);
     }
 }
