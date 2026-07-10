@@ -4,8 +4,24 @@ import javax.net.ssl.*;
 import java.security.cert.X509Certificate;
 
 public class SSLUtil {
+    private static HostnameVerifier defaultHostnameVerifier;
+    private static SSLSocketFactory defaultSslSocketFactory;
+
+    public static void enableSSLVerificationIfNeeded() {
+        if (defaultSslSocketFactory != null) {
+            HttpsURLConnection.setDefaultSSLSocketFactory(defaultSslSocketFactory);
+        }
+        if (defaultHostnameVerifier != null) {
+            HttpsURLConnection.setDefaultHostnameVerifier(defaultHostnameVerifier);
+        }
+    }
+
     public static void disableSSLVerification() {
         try {
+            // Save defaults before overriding
+            defaultHostnameVerifier = HttpsURLConnection.getDefaultHostnameVerifier();
+            defaultSslSocketFactory = HttpsURLConnection.getDefaultSSLSocketFactory();
+
             // Create a trust manager that does not validate certificate chains
             TrustManager[] trustAllCerts = new TrustManager[] {
                     new X509TrustManager() {

@@ -25,9 +25,13 @@ import java.util.Collection;
 public class CDAFetcherService {
     private final TextArea logField;
 
-    public CDAFetcherService(TextArea logField) {
+    public CDAFetcherService(TextArea logField, boolean disableSSL) {
         this.logField = logField;
-        SSLUtil.disableSSLVerification();
+        if (disableSSL) {
+            SSLUtil.disableSSLVerification();
+        } else {
+            SSLUtil.enableSSLVerificationIfNeeded();
+        }
     }
 
     /**

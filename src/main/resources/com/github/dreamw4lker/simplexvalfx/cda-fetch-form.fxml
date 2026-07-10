@@ -8,6 +8,7 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -39,6 +40,10 @@
                <Insets />
             </HBox.margin></Button>
          <CheckBox fx:id="saveGuidesCheckBox" mnemonicParsing="false" text="Сохранять руководства по реализации СЭМД" />
+         <CheckBox fx:id="disableSSLCheckBox" mnemonicParsing="false" text="Отключить проверку SSL">
+            <tooltip>
+               <Tooltip text="Установите этот чекбокс, если при скачивании получаете ошибки вида &quot;PKIX path building failed...&quot;.&#10;Это отключит проверку валидности корневого и всех промежуточных центров сертификации" wrapText="true" />
+            </tooltip></CheckBox>
         </children>
         <VBox.margin>
             <Insets />

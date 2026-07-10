@@ -144,10 +144,10 @@ public class MainFormController {
             return;
         }
 
-        Scene scene = new Scene(root, 800, 500);
+        Scene scene = new Scene(root, 1000, 500);
 
         Stage stage = new Stage();
-        stage.setMinWidth(800);
+        stage.setMinWidth(1000);
         stage.setMinHeight(500);
         stage.setScene(scene);
         stage.setTitle("CDA Fetcher");

@@ -38,6 +38,9 @@ public class CDAFetcherController {
     @FXML
     private CheckBox saveGuidesCheckBox;
 
+    @FXML
+    private CheckBox disableSSLCheckBox;
+
     public void initialize() {
         setupLogging(logField, CDAFetcherController.class);
         setupLogging(logField, CDAFetcherService.class);
@@ -94,7 +97,7 @@ public class CDAFetcherController {
 
         //Запуск скачивания в отдельном потоке
         new Thread(() -> {
-            new CDAFetcherService(logField).downloadAllProtocols(login, password, saveGuides);
+            new CDAFetcherService(logField, disableSSLCheckBox.isSelected()).downloadAllProtocols(login, password, saveGuides);
             changeFieldsActivity(false);
         }).start();
     }
@@ -106,5 +109,6 @@ public class CDAFetcherController {
         passwordField.setDisable(isDisabled);
         submitBtn.setDisable(isDisabled);
         saveGuidesCheckBox.setDisable(isDisabled);
+        disableSSLCheckBox.setDisable(isDisabled);
     }
 }
