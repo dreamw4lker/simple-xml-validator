@@ -2,6 +2,7 @@ package com.github.dreamw4lker.simplexvalfx.service;
 
 import com.github.dreamw4lker.simplexvalfx.beans.enums.OutdatedProtocolVersions;
 import com.github.dreamw4lker.simplexvalfx.beans.enums.ProtocolType;
+import com.github.dreamw4lker.simplexvalfx.utils.SSLUtil;
 import com.github.dreamw4lker.simplexvalfx.utils.TextAreaProgressMonitor;
 import javafx.scene.control.TextArea;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class CDAFetcherService {
 
     public CDAFetcherService(TextArea logField) {
         this.logField = logField;
+        SSLUtil.disableSSLVerification();
     }
 
     /**
