@@ -7,9 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 @Slf4j
@@ -39,15 +36,19 @@ public class AboutController {
     }
 
     /**
-     * Получение лицензии из файла LICENSE
+     * Получение лицензии из resources внутри jar
      */
     private void setLicenseText() {
         try {
-            Path licensePath = Paths.get(".", "LICENSE");
-            String content = Files.readString(licensePath, StandardCharsets.UTF_8);
-            licenseTextArea.setText(content);
+            try (var inputStream = getClass().getClassLoader().getResourceAsStream("LICENSE")) {
+                if (inputStream == null) {
+                    throw new IOException("LICENSE not found in classpath");
+                }
+                String content = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                licenseTextArea.setText(content);
+            }
         } catch (IOException e) {
-            log.error("Не удалось прочитать файл LICENSE", e);
+            log.error("Не удалось прочитать LICENSE из ресурсов", e);
             licenseTextArea.setText("Не найден файл LICENSE");
         }
     }
